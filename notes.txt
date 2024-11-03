@@ -1,0 +1,2 @@
+## Things to do:
+# Ensure TS emits log folder -- DONE
