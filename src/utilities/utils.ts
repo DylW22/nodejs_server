@@ -2,19 +2,26 @@ import { IncomingMessage, ServerResponse } from "http";
 // const jwt = require("jsonwebtoken"); // Ensure you have the jwt package
 // const { requestCounts, RATE_LIMIT_WINDOW } = require("../globals");
 
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import { requestCounts, RATE_LIMIT_WINDOW } from "../globals.js";
 import { BlogPost, DecodedToken } from "../types.js";
 const { JWT_SECRET, JWT_EXPIRATION } = process.env;
 
-interface User {
-  username: string;
-}
+// interface User {
+//   username: string;
+// }
 
-const generateToken = (user: User): string => {
-  return jwt.sign({ username: user.username }, JWT_SECRET as jwt.Secret, {
+// const generateToken = (user: User): string => {
+//   return jwt.sign({ username: user.username }, JWT_SECRET as jwt.Secret, {
+//     expiresIn: JWT_EXPIRATION,
+//   });
+// };
+const generateToken = (userId: string): string => {
+  const token = jwt.sign({ userId: userId }, JWT_SECRET as jwt.Secret, {
     expiresIn: JWT_EXPIRATION,
   });
+
+  return token;
 };
 
 const verifyToken = (token: string): DecodedToken | null => {
@@ -25,6 +32,17 @@ const verifyToken = (token: string): DecodedToken | null => {
   }
 };
 
+export const checkTokenExpiration = (token: string) => {
+  try {
+    const decoded = jwt.decode(token) as JwtPayload;
+    if (!decoded || !decoded.exp) return true;
+    const currentTime = Math.floor(Date.now() / 1000);
+    return decoded.exp < currentTime;
+  } catch (error) {
+    console.error("Error decoding token", error);
+    return true;
+  }
+};
 type Message = {
   message: string;
   error?: string;

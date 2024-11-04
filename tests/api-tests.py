@@ -70,6 +70,7 @@ def test_create_post():
         assert response.status_code == 201
         result = "POST /posts response:", response.json()
         test_results.append({"testName": test_name, "status" :"passed", "result" : result})
+        test_logout() # Added 11.04
     except Exception as e:
         result = f"POST /posts failed: {e}"
         test_results.append({"testName": test_name, "status" :"failed", "result" : result})
@@ -85,6 +86,7 @@ def test_get_post_by_id(post_id):
         else:
             result = "Post not found. Status code:", response.status_code
             test_results.append({"testName": test_name, "status" :"failed", "result": result})
+        test_logout() # Added 11.04
     except Exception as e:
         result = f"GET /posts/{post_id} failed: {e}"
         test_results.append({"testName": test_name, "status" :"failed", "result": result})
@@ -104,6 +106,7 @@ def test_update_post(post_id):
         assert response.status_code == 200
         result = "PUT /posts/{post_id} response:", response.json()
         test_results.append({"testName": test_name, "status" :"passed", "result" : result})
+        test_logout() # Added 11.04
     except Exception as e:
         result = f"PUT /posts/{post_id} failed: {e}"
         test_results.append({"testName": test_name, "status" :"failed", "result" : result})
@@ -119,6 +122,7 @@ def test_delete_post(post_id):
         assert response.status_code == 204
         result = "DELETE /posts/{post_id} response: Deleted successfully."
         test_results.append({"testName": test_name, "status" :"passed", "result": result})
+        
     except Exception as e:
         result = f"DELETE /posts/{post_id} failed: {e}"
         test_results.append({"testName": test_name, "status": "failed", "result": result})

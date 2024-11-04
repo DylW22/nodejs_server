@@ -1,16 +1,21 @@
 import { IncomingMessage, ServerResponse } from "http";
-import { sendResponse, verifyToken } from "./utilities/utils.js";
+import {
+  checkTokenExpiration,
+  sendResponse,
+  verifyToken,
+} from "./utilities/utils.js";
 
 import {
   requestCounts,
   logFilePath,
-  blacklistedTokens,
+  // blacklistedTokens,
   RATE_LIMIT_WINDOW,
   MAX_REQUESTS,
 } from "./globals.js";
 
 import fs from "fs";
 import { DecodedToken, ExtendedRequest } from "./types.js";
+import { users_pool } from "./database/pg_db.js";
 //import { isUploadFile } from "./server.js";
 
 interface RequestCount {
@@ -101,7 +106,7 @@ interface UserRequest extends IncomingMessage {
   user: DecodedToken;
 }
 
-const jwtAuthMiddleware = (
+const jwtAuthMiddleware = async (
   request: UserRequest,
   response: ServerResponse,
   next: () => {}
@@ -114,11 +119,31 @@ const jwtAuthMiddleware = (
     }
 
     const token = authHeader.split(" ")[1] || "";
+    const isExpired = checkTokenExpiration(token);
 
-    if (blacklistedTokens.has(token)) {
-      sendResponse(response, 403, { message: "Token has been blacklisted" });
+    if (isExpired) {
+      sendResponse(response, 401, { message: "Token expired" });
       return;
     }
+    try {
+      const result = await users_pool.query(
+        "SELECT * FROM user_tokens WHERE token = $1 AND blacklisted = TRUE",
+        [token]
+      );
+      if (result.rows.length > 0) {
+        sendResponse(response, 403, { message: "Token has been blacklisted." });
+        return;
+      }
+    } catch (error) {
+      console.error("Error checking blacklisted tokens:", error);
+      sendResponse(response, 500, { message: "Internal Server Error" });
+      return;
+    }
+    //Fix this blacklisting
+    // if (blacklistedTokens.has(token)) {
+    //   sendResponse(response, 403, { message: "Token has been blacklisted" });
+    //   return;
+    // }
     const decoded = verifyToken(token);
     if (!decoded) {
       sendResponse(response, 403, { message: "Forbidden" });
