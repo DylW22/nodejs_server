@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "My Rest API",
   "main": "src/server.js",
+  "type": "module",
   "scripts": {
     "dev": "node --env-file=src/.env src/server.js",
     "api-test": "python tests/api-tests.py",
