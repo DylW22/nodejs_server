@@ -7,13 +7,13 @@ import {
 
 import {
   requestCounts,
-  // logFilePath, //temp disabled
+  logFilePath, //temp disabled
   // blacklistedTokens,
   RATE_LIMIT_WINDOW,
   MAX_REQUESTS,
 } from "./globals.js";
 
-// import fs from "fs";
+import fs from "fs";
 import { DecodedToken, ExtendedRequest } from "./types.js";
 import { users_pool } from "./database/pg_db.js";
 //import { isUploadFile } from "./server.js";
@@ -94,11 +94,11 @@ const loggingMiddleware = (
   const logMessage = `[${timestamp}] ${method} ${url} ip: ${ip}`;
 
   console.log(logMessage);
-  // fs.appendFile(logFilePath, logMessage + "\n", (err) => {
-  //   if (err) {
-  //     console.error("Failed to write to log file:", err);
-  //   }
-  // });
+  fs.appendFile(logFilePath, logMessage + "\n", (err) => {
+    if (err) {
+      console.error("Failed to write to log file:", err);
+    }
+  });
   next();
 };
 
