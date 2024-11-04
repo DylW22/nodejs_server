@@ -16,7 +16,11 @@ const requestCounts: RequestCounts = {};
 let __dirname = path.dirname(new URL(import.meta.url).pathname);
 __dirname = path.win32.normalize(__dirname.substring(1));
 
-const logDirectory = path.join(__dirname, "logs");
+//VSCode:
+//const logDirectory = path.join(__dirname, "logs");
+
+//Vercel
+const logDirectory = path.resolve(__dirname, "logs");
 if (!fs.existsSync(logDirectory)) {
   fs.mkdirSync(logDirectory);
 }
