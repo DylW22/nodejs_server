@@ -1,5 +1,5 @@
 import path from "path";
-import fs from "fs";
+// import fs from "fs";
 // import { BlogPost } from "./types";
 
 type RequestCount = {
@@ -17,15 +17,16 @@ let __dirname = path.dirname(new URL(import.meta.url).pathname);
 __dirname = path.win32.normalize(__dirname.substring(1));
 
 //VSCode:
-//const logDirectory = path.join(__dirname, "logs");
 
-//Vercel
-const logDirectory = path.resolve(__dirname, "logs");
-if (!fs.existsSync(logDirectory)) {
-  fs.mkdirSync(logDirectory);
-}
+// //if (process.env.NODE_ENV === "development") {
+// const logDirectory = path.join(__dirname, "logs");
 
-const logFilePath = path.join(logDirectory, "request_logs.txt");
+// if (!fs.existsSync(logDirectory)) {
+//   fs.mkdirSync(logDirectory);
+// }
+
+// const logFilePath = path.join(logDirectory, "request_logs.txt");
+// //}
 
 const RATE_LIMIT_WINDOW = 60000; //60 seconds;
 const MAX_REQUESTS = process.env.NODE_ENV === "production" ? 10 : 1000; //10 requests per min
@@ -41,7 +42,7 @@ const MAX_REQUESTS = process.env.NODE_ENV === "production" ? 10 : 1000; //10 req
 
 export {
   requestCounts,
-  logFilePath,
+  // logFilePath, //temp disabled
   RATE_LIMIT_WINDOW,
   MAX_REQUESTS,
   // USERNAME,
