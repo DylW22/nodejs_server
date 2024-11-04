@@ -5,7 +5,7 @@ import {
   verifyToken,
 } from "../utilities/utils.js";
 import { ExtendedRequest, LoginPostRequest } from "../types";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 // import { blacklistedTokens } from "../globals.js";
 import { users_pool } from "../database/pg_db.js";
 
@@ -16,28 +16,6 @@ function isLoginRequest(body: any): body is LoginPostRequest {
     typeof body.password === "string"
   );
 }
-
-// function isCreatePostRequest(body: any): body is CreatePostRequest {
-//   return (
-//     body && typeof body.title === "string" && typeof body.content === "string"
-//   );
-// }
-
-// const login = async (request: ExtendedRequest, response: ServerResponse) => {
-//   if (!isLoginRequest(request.body)) {
-//     sendResponse(response, 400, {
-//       message: "Invalid request format for login",
-//     });
-//     return;
-//   }
-//   const { username, password } = request.body;
-//   if (username === USERNAME && password === PASSWORD) {
-//     const token = generateToken({ username });
-//     sendResponse(response, 200, { message: "Login successful", token });
-//   } else {
-//     sendResponse(response, 401, { message: "Invalid credentials" });
-//   }
-// };
 
 const login = async (request: ExtendedRequest, response: ServerResponse) => {
   if (!isLoginRequest(request.body)) {
@@ -62,7 +40,7 @@ const login = async (request: ExtendedRequest, response: ServerResponse) => {
     if (isMatch) {
       const token = generateToken(user.id);
 
-      const decoded = jwt.decode(token) as any;
+      const decoded = jwt.decode(token) as JwtPayload;
       if (!decoded?.exp) {
         throw new Error("Token does not contain an expiration");
       }
@@ -110,11 +88,5 @@ const logout = async (request: IncomingMessage, response: ServerResponse) => {
     console.error("Error blacklisting token:", error);
     sendResponse(response, 500, { message: "Internal Server Error" });
   }
-
-  //console.log("blackListedTokens INIT: ", blacklistedTokens);
-  //blacklistedTokens.add(token);
-  //console.log("blackListedTokens FINAL: ", blacklistedTokens);
-
-  // sendResponse(response, 200, { message: "Logged out successfully" });
 };
 export { login, logout };
