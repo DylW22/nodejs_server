@@ -141,7 +141,7 @@ const server = http.createServer(
 
               break;
             default:
-              sendResponse(response, 404, { message: "Not found" });
+              sendResponse(response, 404, { message: "Not found Test A" });
           }
           break;
 
@@ -159,7 +159,7 @@ const server = http.createServer(
 
               break;
             default:
-              sendResponse(response, 404, { message: "Not found" });
+              sendResponse(response, 404, { message: "Not found Test B" });
           }
           break;
         case "PUT":
@@ -176,7 +176,7 @@ const server = http.createServer(
               sendResponse(response, 400, { message: "Invalid ID" });
             }
           } else {
-            sendResponse(response, 404, { message: "Not Found" });
+            sendResponse(response, 404, { message: "Not Found Test C" });
           }
           break;
 
@@ -188,7 +188,7 @@ const server = http.createServer(
               sendResponse(response, 400, { message: "Invalid ID" });
             }
           } else {
-            sendResponse(response, 404, { message: "Not Found" });
+            sendResponse(response, 404, { message: "Not Found Test D" });
           }
           break;
 

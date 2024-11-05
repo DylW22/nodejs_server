@@ -35,7 +35,7 @@ const getPostById = async (
 
     const retrievedPost = results.rows[0];
     if (!retrievedPost) {
-      sendResponse(response, 404, { message: "Post not found" });
+      sendResponse(response, 404, { message: "Post not found Test E" });
       return;
     }
     sendResponse(response, 200, retrievedPost);
@@ -81,7 +81,7 @@ const updatePost = async (
       [title, content, id]
     );
     if (result.rowCount === 0) {
-      sendResponse(response, 404, { message: "Post not found" });
+      sendResponse(response, 404, { message: "Post not found Test F" });
       return;
     }
     const updatedPost = result.rows[0];
