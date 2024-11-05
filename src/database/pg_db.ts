@@ -10,7 +10,7 @@ if (!process.env.PG_PASSWORD) {
 
 const pool = new Pool({
   user: process.env.PG_USER,
-  host: "localhost",
+  host: "34.81.181.102",
   database: "BlogPosts", // Your database name
   password: process.env.PG_PASSWORD,
   port: 5432, // Default PostgreSQL port
@@ -18,7 +18,7 @@ const pool = new Pool({
 
 const users_pool = new Pool({
   user: process.env.PG_USER,
-  host: "localhost",
+  host: "34.81.181.102",
   database: "Users", // Your database name
   password: process.env.PG_PASSWORD,
   port: 5432,
