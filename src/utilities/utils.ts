@@ -4,7 +4,12 @@ import { IncomingMessage, ServerResponse } from "http";
 
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { requestCounts, RATE_LIMIT_WINDOW } from "../globals.js";
-import { BlogPost, DecodedToken } from "../types.js";
+import {
+  BlogPost,
+  CreatePostRequest,
+  DecodedToken,
+  UploadFile,
+} from "../types.js";
 const { JWT_SECRET, JWT_EXPIRATION } = process.env;
 
 // interface User {
@@ -100,10 +105,23 @@ const refreshTokenBlacklist = () => {
   }
 };
 
+const isUploadFile = (request: IncomingMessage): request is UploadFile => {
+  return (request as UploadFile).file !== undefined;
+};
+
+//Old
+const isMutatePost = (
+  request: IncomingMessage
+): request is CreatePostRequest => {
+  return (request as CreatePostRequest).body !== undefined;
+};
+
 export {
   generateToken,
   verifyToken,
   sendResponse,
   runMiddleware,
   refreshTokenBlacklist,
+  isUploadFile,
+  isMutatePost,
 };

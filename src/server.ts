@@ -1,5 +1,3 @@
-import { CreatePostRequest, UploadFile } from "./types";
-
 import http, { IncomingMessage, ServerResponse } from "node:http";
 import url from "url";
 import dotenv from "dotenv";
@@ -9,6 +7,8 @@ import {
   sendResponse,
   runMiddleware,
   refreshTokenBlacklist,
+  isUploadFile,
+  isMutatePost,
 } from "./utilities/utils.js";
 
 import {
@@ -37,18 +37,18 @@ import { uploadFile } from "./controllers/UploadController.js";
 setInterval(refreshTokenBlacklist, RATE_LIMIT_WINDOW);
 
 // Type guard to check if request is an UploadFile
-export const isUploadFile = (
-  request: IncomingMessage
-): request is UploadFile => {
-  return (request as UploadFile).file !== undefined;
-};
+// export const isUploadFile = (
+//   request: IncomingMessage
+// ): request is UploadFile => {
+//   return (request as UploadFile).file !== undefined;
+// };
 
-//Old
-export const isMutatePost = (
-  request: IncomingMessage
-): request is CreatePostRequest => {
-  return (request as CreatePostRequest).body !== undefined;
-};
+// //Old
+// export const isMutatePost = (
+//   request: IncomingMessage
+// ): request is CreatePostRequest => {
+//   return (request as CreatePostRequest).body !== undefined;
+// };
 
 //New:
 // function isCreatePostRequest(body: any): body is CreatePostRequest {
