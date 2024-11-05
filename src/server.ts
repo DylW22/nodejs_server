@@ -24,13 +24,12 @@ import { RATE_LIMIT_WINDOW } from "./globals.js";
 // import { hostname, port } from "./config.js";
 
 // import { login, logout } from "./controllers/auth.js";
-import {
-  getPosts,
-  getPostById,
-  // createPost,
-  // updatePost,
-  // deletePost,
-} from "./controllers/PostController.js";
+// import // getPosts,
+// // getPostById,
+// // createPost,
+// // updatePost,
+// // deletePost,
+// "./controllers/PostController.js";
 
 // import { uploadFile } from "./controllers/UploadController.js";
 
