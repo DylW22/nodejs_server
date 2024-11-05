@@ -157,11 +157,14 @@ const server = http.createServer(
                 sendResponse(response, 400, { message: "Invalid ID" });
               }
               break;
+            //Test
             case `/favicon.ico`:
               sendResponse(response, 404, { message: "Favicon needed" });
               break;
             default:
-              sendResponse(response, 404, { message: "Not found Test B" });
+              sendResponse(response, 404, {
+                message: `Not found ${normalizedPathname}`,
+              });
           }
           break;
         case "PUT":
