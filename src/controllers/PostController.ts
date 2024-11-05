@@ -23,15 +23,16 @@ const getPostById = async (
   //   (blogPost) => blogPost.id === id
   // );
   try {
-    if (process.env.NODE_ENV === "development") {
-      await pool.query(
-        "INSERT INTO blog_posts (id, title, content) VALUES (1, 'TEST_POST', 'This is a test post.');"
-      );
-    }
+    // if (process.env.NODE_ENV === "development") {
+    //   await pool.query(
+    //     "INSERT INTO blog_posts (id, title, content) VALUES (1, 'TEST_POST', 'This is a test post.');"
+    //   );
+    // }
 
     const results = await pool.query(`SELECT * FROM blog_posts WHERE id = $1`, [
       id,
     ]);
+
     const retrievedPost = results.rows[0];
     if (!retrievedPost) {
       sendResponse(response, 404, { message: "Post not found" });

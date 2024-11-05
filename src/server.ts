@@ -57,27 +57,62 @@ export const isMutatePost = (
 //   );
 // }
 
+// CORS middleware function
+const corsMiddleware = (req: IncomingMessage, res: ServerResponse) => {
+  // Allow all origins (for development; change for production)
+  res.setHeader("Access-Control-Allow-Origin", "*");
+
+  // Allow specific HTTP methods
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, DELETE, OPTIONS"
+  );
+
+  // Allow specific headers (if needed)
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+  // Handle preflight requests
+  if (req.method === "OPTIONS") {
+    res.writeHead(204); // No Content
+    res.end();
+    return true; // Indicate that we handled the request
+  }
+
+  return false; // Indicate that the request should continue to be handled
+};
+
 const server = http.createServer(
   //request: IncomingMessage
   (request: IncomingMessage, response: ServerResponse) => {
+    const corsHandled = corsMiddleware(request, response);
+    if (corsHandled) return; // If CORS handled, return early
+
     const parsedUrl = url.parse(request.url || "", true);
+    //Added this
+    let normalizedPathname = parsedUrl.pathname || "";
+    if (normalizedPathname.endsWith("/")) {
+      normalizedPathname = normalizedPathname.slice(0, -1);
+    }
+    // console.log("parsedUrl: ", parsedUrl);
+    // console.log("normalized: ", normalizedPathname);
     const method = request.method;
-    const id = parsedUrl.pathname ? parsedUrl.pathname.split("/")[2] : null; // Extract ID from URL
+    //const id = parsedUrl.pathname ? parsedUrl.pathname.split("/")[2] : null; // Extract ID from URL
+    const id = normalizedPathname.split("/")[2] || null;
 
     const middlewares = [
       rateLimitMiddleware,
       loggingMiddleware,
       errorMiddleware,
       jsonParsingMiddleware,
-      ...(parsedUrl.pathname && parsedUrl.pathname.startsWith("/posts")
-        ? [jwtAuthMiddleware]
-        : []),
+      ...(normalizedPathname.startsWith("/posts") ? [jwtAuthMiddleware] : []),
     ];
 
     runMiddleware(request, response, middlewares, () => {
       switch (method) {
         case "POST":
-          switch (parsedUrl.pathname) {
+          switch (
+            normalizedPathname //from parsedUrl.pathname
+          ) {
             case "/upload":
               if (isUploadFile(request)) {
                 uploadFile(request, response);
@@ -111,7 +146,7 @@ const server = http.createServer(
           break;
 
         case "GET":
-          switch (parsedUrl.pathname) {
+          switch (normalizedPathname) {
             case "/posts":
               getPosts(response);
               break;
@@ -128,7 +163,7 @@ const server = http.createServer(
           }
           break;
         case "PUT":
-          if (parsedUrl.pathname && parsedUrl.pathname.startsWith("/posts/")) {
+          if (normalizedPathname.startsWith("/posts/")) {
             if (id) {
               if (isMutatePost(request)) {
                 updatePost(id, request, response);
@@ -146,7 +181,7 @@ const server = http.createServer(
           break;
 
         case "DELETE":
-          if (parsedUrl.pathname && parsedUrl.pathname.startsWith("/posts/")) {
+          if (normalizedPathname.startsWith("/posts/")) {
             if (id) {
               deletePost(id, response);
             } else {
@@ -158,7 +193,6 @@ const server = http.createServer(
           break;
 
         default:
-          console.log("Am I being sent?");
           sendResponse(response, 405, { message: "Method Not Allowed" });
       }
     });

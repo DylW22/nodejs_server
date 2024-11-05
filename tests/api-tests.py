@@ -134,9 +134,9 @@ if __name__ == "__main__":
     test_login(True)
     test_logout(True)
     test_create_post()
-    test_get_post_by_id(post_id="1")  
-    test_update_post(post_id="1")  
-    test_delete_post(post_id="1")
+    test_get_post_by_id(post_id="2")  
+    test_update_post(post_id="2")  
+    test_delete_post(post_id="2")
 
 
 def remove_ansi_escape_codes(text):
