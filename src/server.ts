@@ -26,12 +26,11 @@ import { RATE_LIMIT_WINDOW } from "./globals.js";
 // import { hostname, port } from "./config.js";
 
 // import { login, logout } from "./controllers/auth.js";
-// import // getPosts,
-// // getPostById,
-// // createPost,
-// // updatePost,
-// // deletePost,
-// "./controllers/PostController.js";
+import { getPosts } from "./controllers/PostController.js";
+// getPostById,
+// createPost,
+// updatePost,
+// deletePost,
 
 // import { uploadFile } from "./controllers/UploadController.js";
 
@@ -132,8 +131,8 @@ export default async function handler(
       case "GET":
         switch (normalizedPathname) {
           case "/posts":
-            sendResponse(response, 200, { message: "/posts successful" });
-            //getPosts(response);
+            //sendResponse(response, 200, { message: "/posts successful" });
+            getPosts(response);
             break;
           case `/posts/${id}`:
             if (id) {
