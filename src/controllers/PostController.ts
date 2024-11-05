@@ -5,14 +5,17 @@ import { CreatePostRequest } from "../types.js";
 import { pool } from "../database/pg_db.js";
 
 const getPosts = async (response: ServerResponse) => {
-  try {
-    const results = await pool.query("SELECT * FROM blog_posts");
-    const blogs = results.rows;
-    sendResponse(response, 200, blogs);
-  } catch (error) {
-    console.error("Error retrieving blog posts:", error);
-    sendResponse(response, 500, { message: "Internal Server Error Test 7" });
-  }
+  sendResponse(response, 200, [
+    { id: "1", title: "Sample title", content: "Sample Content" },
+  ]);
+  // try {
+  //   const results = await pool.query("SELECT * FROM blog_posts");
+  //   const blogs = results.rows;
+  //   sendResponse(response, 200, blogs);
+  // } catch (error) {
+  //   console.error("Error retrieving blog posts:", error);
+  //   sendResponse(response, 500, { message: "Internal Server Error Test 7" });
+  // }
 };
 
 const getPostById = async (
