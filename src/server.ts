@@ -91,19 +91,23 @@ export default async function handler(
       case "GET":
         switch (normalizedPathname) {
           case "/posts":
-            getPosts(response);
+            sendResponse(response, 200, { message: "/posts successful" });
+            //getPosts(response);
             break;
           case `/posts/${id}`:
             if (id) {
-              getPostById(id, response);
+              // getPostById(id, response);
+              sendResponse(response, 200, {
+                message: `/posts/${id} successful`,
+              });
             } else {
               sendResponse(response, 400, { message: "Invalid ID" });
             }
             break;
           //Test
           default:
-            sendResponse(response, 404, {
-              message: `Not found ${normalizedPathname}`,
+            sendResponse(response, 200, {
+              message: `Welcome to the API!`,
             });
         }
         break;
