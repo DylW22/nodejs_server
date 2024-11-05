@@ -158,9 +158,6 @@ const server = http.createServer(
               }
               break;
             //Test
-            case `/favicon.ico`:
-              sendResponse(response, 404, { message: "Favicon needed" });
-              break;
             default:
               sendResponse(response, 404, {
                 message: `Not found ${normalizedPathname}`,
