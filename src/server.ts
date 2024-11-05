@@ -1,4 +1,42 @@
-import http, { IncomingMessage, ServerResponse } from "node:http";
+export default function handler(req: any, res: any) {
+  const { method, url } = req;
+
+  // Routing based on the URL path
+  if (url === "/posts") {
+    switch (method) {
+      case "GET":
+        // Logic to retrieve posts
+        const posts = [
+          { id: 1, title: "First Post", content: "This is the first post." },
+          { id: 2, title: "Second Post", content: "This is the second post." },
+        ];
+        return res.status(200).json(posts);
+
+      case "POST":
+        // Logic to create a new post
+        const newPost = req.body; // Assuming the post data is sent in the request body
+        return res
+          .status(201)
+          .json({ message: "Post created!", post: newPost });
+
+      default:
+        res.setHeader("Allow", ["GET", "POST"]);
+        return res.status(405).end(`Method ${method} Not Allowed`);
+    }
+  } else {
+    // Handle other requests (like the root endpoint)
+    switch (method) {
+      case "GET":
+        // Logic for the root API endpoint
+        return res.status(200).json({ message: `Welcome to the API!` });
+      default:
+        res.setHeader("Allow", ["GET"]);
+        return res.status(405).end(`Method ${method} Not Allowed`);
+    }
+  }
+}
+
+/*import http, { IncomingMessage, ServerResponse } from "node:http";
 import url from "url";
 import dotenv from "dotenv";
 dotenv.config();
@@ -35,27 +73,6 @@ import {
 import { uploadFile } from "./controllers/UploadController.js";
 
 setInterval(refreshTokenBlacklist, RATE_LIMIT_WINDOW);
-
-// Type guard to check if request is an UploadFile
-// export const isUploadFile = (
-//   request: IncomingMessage
-// ): request is UploadFile => {
-//   return (request as UploadFile).file !== undefined;
-// };
-
-// //Old
-// export const isMutatePost = (
-//   request: IncomingMessage
-// ): request is CreatePostRequest => {
-//   return (request as CreatePostRequest).body !== undefined;
-// };
-
-//New:
-// function isCreatePostRequest(body: any): body is CreatePostRequest {
-//   return (
-//     body && typeof body.title === "string" && typeof body.content === "string"
-//   );
-// }
 
 // CORS middleware function
 const corsMiddleware = (req: IncomingMessage, res: ServerResponse) => {
@@ -204,3 +221,4 @@ const server = http.createServer(
 server.listen(port, hostname, () => {
   console.log(`Server running at http://${hostname}:${port}/`);
 });
+*/
