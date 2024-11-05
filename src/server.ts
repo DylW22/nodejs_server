@@ -7,6 +7,8 @@ import {
   sendResponse,
   runMiddleware,
   refreshTokenBlacklist,
+  isUploadFile,
+  isMutatePost,
   // isUploadFile,
   // isMutatePost,
 } from "./utilities/utils.js";
@@ -87,6 +89,46 @@ export default async function handler(
   ];
   runMiddleware(request, response, middlewares, () => {
     switch (method) {
+      case "POST":
+        switch (
+          normalizedPathname //from parsedUrl.pathname
+        ) {
+          case "/upload":
+            if (isUploadFile(request)) {
+              sendResponse(response, 200, { message: "/upload" });
+              // uploadFile(request, response);
+            } else {
+              sendResponse(response, 400, {
+                message: "Invalid request type for upload",
+              });
+            }
+
+            break;
+          case "/login":
+            sendResponse(response, 200, { message: "/login" });
+            // login(request, response);
+            break;
+          case "/logout":
+            sendResponse(response, 200, { message: "/logout" });
+            // logout(request, response);
+            break;
+          case "/posts":
+            if (isMutatePost(request)) {
+              sendResponse(response, 200, { message: "POST /posts" });
+              // createPost(request, response);
+            } else {
+              console.log("Error 2");
+              sendResponse(response, 400, {
+                message: "Invalid request type for createPost",
+              });
+            }
+
+            break;
+          default:
+            sendResponse(response, 404, { message: "Not found Test A" });
+        }
+        break;
+
       case "GET":
         switch (normalizedPathname) {
           case "/posts":
@@ -108,6 +150,39 @@ export default async function handler(
             sendResponse(response, 200, {
               message: `Welcome to the API!`,
             });
+        }
+        break;
+      case "PUT":
+        if (normalizedPathname.startsWith("/posts/")) {
+          //Normalize this
+          if (id) {
+            if (isMutatePost(request)) {
+              sendResponse(response, 200, { message: "PUT /posts/" });
+              // updatePost(id, request, response);
+            } else {
+              sendResponse(response, 400, {
+                message: "Invalid request structure for updating a post",
+              });
+            }
+          } else {
+            sendResponse(response, 400, { message: "Invalid ID" });
+          }
+        } else {
+          sendResponse(response, 404, { message: "Not Found Test C" });
+        }
+        break;
+      case "DELETE":
+        if (normalizedPathname.startsWith("/posts/")) {
+          //Normalize this
+
+          if (id) {
+            // deletePost(id, response);
+            sendResponse(response, 200, { message: `DELETE /posts/${id}` });
+          } else {
+            sendResponse(response, 400, { message: "Invalid ID" });
+          }
+        } else {
+          sendResponse(response, 404, { message: "Not Found Test D" });
         }
         break;
 
