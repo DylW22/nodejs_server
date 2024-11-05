@@ -56,7 +56,7 @@ const login = async (request: ExtendedRequest, response: ServerResponse) => {
     }
   } catch (error) {
     console.error("Error during login:", error);
-    sendResponse(response, 500, { message: "Internal server error" });
+    sendResponse(response, 500, { message: "Internal server error Test 5" });
   }
 };
 
@@ -86,7 +86,7 @@ const logout = async (request: IncomingMessage, response: ServerResponse) => {
     sendResponse(response, 200, { message: "Logged out successfully" });
   } catch (error) {
     console.error("Error blacklisting token:", error);
-    sendResponse(response, 500, { message: "Internal Server Error" });
+    sendResponse(response, 500, { message: "Internal Server Error Test 6" });
   }
 };
 export { login, logout };

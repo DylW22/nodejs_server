@@ -11,7 +11,7 @@ const getPosts = async (response: ServerResponse) => {
     sendResponse(response, 200, blogs);
   } catch (error) {
     console.error("Error retrieving blog posts:", error);
-    sendResponse(response, 500, { message: "Internal Server Error" });
+    sendResponse(response, 500, { message: "Internal Server Error Test 7" });
   }
 };
 
@@ -41,7 +41,7 @@ const getPostById = async (
     sendResponse(response, 200, retrievedPost);
   } catch (error) {
     console.error("Error retrieving blog posts:", error);
-    sendResponse(response, 500, { message: "Internal Server Error" });
+    sendResponse(response, 500, { message: "Internal Server Error Test 8" });
   }
 };
 
@@ -64,7 +64,7 @@ const createPost = async (
     sendResponse(response, 201, newPost);
   } catch (error) {
     console.error("Error creating post:", error);
-    sendResponse(response, 500, { message: "Internal server error" });
+    sendResponse(response, 500, { message: "Internal server error Test 9" });
   }
 };
 
@@ -141,7 +141,7 @@ const deletePost = async (id: string, response: ServerResponse) => {
     sendResponse(response, 204, { message: "" });
   } catch (error) {
     console.error("Error deleting post:", error);
-    sendResponse(response, 500, { message: "Internal Server Error" });
+    sendResponse(response, 500, { message: "Internal Server Error Test 10" });
   }
 };
 
