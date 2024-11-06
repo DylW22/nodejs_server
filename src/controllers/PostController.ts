@@ -5,17 +5,14 @@ import { CreatePostRequest } from "../types.js";
 import { pool } from "../database/pg_db.js";
 
 const getPosts = async (response: ServerResponse) => {
-  sendResponse(response, 200, [
-    { id: "1", title: "Sample title", content: "Sample Content" },
-  ]);
-  // try {
-  //   const results = await pool.query("SELECT * FROM blog_posts");
-  //   const blogs = results.rows;
-  //   sendResponse(response, 200, blogs);
-  // } catch (error) {
-  //   console.error("Error retrieving blog posts:", error);
-  //   sendResponse(response, 500, { message: "Internal Server Error Test 7" });
-  // }
+  try {
+    const results = await pool.query("SELECT * FROM blog_posts");
+    const blogs = results.rows;
+    sendResponse(response, 200, blogs);
+  } catch (error) {
+    console.error("Error retrieving blog posts:", error);
+    sendResponse(response, 500, { message: "Internal Server Error" });
+  }
 };
 
 const getPostById = async (
@@ -38,13 +35,13 @@ const getPostById = async (
 
     const retrievedPost = results.rows[0];
     if (!retrievedPost) {
-      sendResponse(response, 404, { message: "Post not found Test E" });
+      sendResponse(response, 404, { message: "Post not found" });
       return;
     }
     sendResponse(response, 200, retrievedPost);
   } catch (error) {
     console.error("Error retrieving blog posts:", error);
-    sendResponse(response, 500, { message: "Internal Server Error Test 8" });
+    sendResponse(response, 500, { message: "Internal Server Error" });
   }
 };
 
@@ -67,7 +64,7 @@ const createPost = async (
     sendResponse(response, 201, newPost);
   } catch (error) {
     console.error("Error creating post:", error);
-    sendResponse(response, 500, { message: "Internal server error Test 9" });
+    sendResponse(response, 500, { message: "Internal server error" });
   }
 };
 
@@ -84,7 +81,7 @@ const updatePost = async (
       [title, content, id]
     );
     if (result.rowCount === 0) {
-      sendResponse(response, 404, { message: "Post not found Test F" });
+      sendResponse(response, 404, { message: "Post not found" });
       return;
     }
     const updatedPost = result.rows[0];
@@ -144,7 +141,7 @@ const deletePost = async (id: string, response: ServerResponse) => {
     sendResponse(response, 204, { message: "" });
   } catch (error) {
     console.error("Error deleting post:", error);
-    sendResponse(response, 500, { message: "Internal Server Error Test 10" });
+    sendResponse(response, 500, { message: "Internal Server Error" });
   }
 };
 

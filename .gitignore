@@ -7,3 +7,5 @@ serverPremium.js
 serverPremium2.js
 serverTest.js
 tests/results/*
+.vercel
+tmp/*

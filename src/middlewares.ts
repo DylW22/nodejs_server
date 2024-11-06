@@ -33,7 +33,7 @@ const errorMiddleware = (
     next();
   } catch (error) {
     let statusCode = 500;
-    let errorMessage = { message: `Internal Server Error Test 1` }; //5.11
+    let errorMessage = { message: `Internal Server Error` }; //5.11
 
     if (error instanceof Error) {
       statusCode = (error as any).statusCode || 500;
@@ -137,7 +137,7 @@ const jwtAuthMiddleware = async (
     } catch (error) {
       console.error("Error checking blacklisted tokens:", error);
       sendResponse(response, 500, {
-        message: `Internal Server Error Test 2`,
+        message: `Internal Server Error`,
       });
       return;
     }
@@ -178,15 +178,13 @@ const jsonParsingMiddleware = (
           sendResponse(response, 400, {
             message: "Invalid JSON",
             error:
-              error instanceof Error
-                ? error.message
-                : "Internal Server Error Test 3",
+              error instanceof Error ? error.message : "Internal Server Error",
           });
         }
       });
       request.on("error", () => {
         sendResponse(response, 500, {
-          message: "Internal Server Error Test 4",
+          message: "Internal Server Error",
         });
       });
     } else if (contentType?.includes("multipart/form-data")) {

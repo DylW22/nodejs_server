@@ -25,14 +25,20 @@ import { RATE_LIMIT_WINDOW } from "./globals.js";
 
 // import { hostname, port } from "./config.js";
 
-// import { login, logout } from "./controllers/auth.js";
-import { getPosts } from "./controllers/PostController.js";
-// getPostById,
+import { login, logout } from "./controllers/auth.js";
+import {
+  getPosts,
+  getPostById,
+  createPost,
+  deletePost,
+  updatePost,
+} from "./controllers/PostController.js";
+
 // createPost,
 // updatePost,
 // deletePost,
 
-// import { uploadFile } from "./controllers/UploadController.js";
+import { uploadFile } from "./controllers/UploadController.js";
 
 // CORS middleware function
 const corsMiddleware = (req: IncomingMessage, res: ServerResponse) => {
@@ -94,8 +100,8 @@ export default async function handler(
         ) {
           case "/upload":
             if (isUploadFile(request)) {
-              sendResponse(response, 200, { message: "/upload" });
-              // uploadFile(request, response);
+              //sendResponse(response, 200, { message: "/upload" });
+              uploadFile(request, response);
             } else {
               sendResponse(response, 400, {
                 message: "Invalid request type for upload",
@@ -104,17 +110,17 @@ export default async function handler(
 
             break;
           case "/login":
-            sendResponse(response, 200, { message: "/login" });
-            // login(request, response);
+            //sendResponse(response, 200, { message: "/login" });
+            login(request, response);
             break;
           case "/logout":
-            sendResponse(response, 200, { message: "/logout" });
-            // logout(request, response);
+            //sendResponse(response, 200, { message: "/logout" });
+            logout(request, response);
             break;
           case "/posts":
             if (isMutatePost(request)) {
-              sendResponse(response, 200, { message: "POST /posts" });
-              // createPost(request, response);
+              //sendResponse(response, 200, { message: "POST /posts" });
+              createPost(request, response);
             } else {
               console.log("Error 2");
               sendResponse(response, 400, {
@@ -124,22 +130,18 @@ export default async function handler(
 
             break;
           default:
-            sendResponse(response, 404, { message: "Not found Test A" });
+            sendResponse(response, 404, { message: "Not found" });
         }
         break;
 
       case "GET":
         switch (normalizedPathname) {
           case "/posts":
-            //sendResponse(response, 200, { message: "/posts successful" });
             getPosts(response);
             break;
           case `/posts/${id}`:
             if (id) {
-              // getPostById(id, response);
-              sendResponse(response, 200, {
-                message: `/posts/${id} successful`,
-              });
+              getPostById(id, response);
             } else {
               sendResponse(response, 400, { message: "Invalid ID" });
             }
@@ -156,8 +158,8 @@ export default async function handler(
           //Normalize this
           if (id) {
             if (isMutatePost(request)) {
-              sendResponse(response, 200, { message: "PUT /posts/" });
-              // updatePost(id, request, response);
+              //sendResponse(response, 200, { message: "PUT /posts/" });
+              updatePost(id, request, response);
             } else {
               sendResponse(response, 400, {
                 message: "Invalid request structure for updating a post",
@@ -175,13 +177,13 @@ export default async function handler(
           //Normalize this
 
           if (id) {
-            // deletePost(id, response);
-            sendResponse(response, 200, { message: `DELETE /posts/${id}` });
+            deletePost(id, response);
+            //sendResponse(response, 200, { message: `DELETE /posts/${id}` });
           } else {
             sendResponse(response, 400, { message: "Invalid ID" });
           }
         } else {
-          sendResponse(response, 404, { message: "Not Found Test D" });
+          sendResponse(response, 404, { message: "Not Found" });
         }
         break;
 

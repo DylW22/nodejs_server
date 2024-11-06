@@ -56,7 +56,7 @@ const login = async (request: ExtendedRequest, response: ServerResponse) => {
     }
   } catch (error) {
     console.error("Error during login:", error);
-    sendResponse(response, 500, { message: "Internal server error Test 5" });
+    sendResponse(response, 500, { message: "Internal server error" });
   }
 };
 
