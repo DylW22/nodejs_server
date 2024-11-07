@@ -9,3 +9,4 @@ serverTest.js
 tests/results/*
 .vercel
 gcp-credentials.json
+logs/request_logs.txt

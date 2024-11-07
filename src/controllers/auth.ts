@@ -8,7 +8,6 @@ import { ExtendedRequest, LoginPostRequest } from "../types";
 import jwt, { JwtPayload } from "jsonwebtoken";
 // import { blacklistedTokens } from "../globals.js";
 import { users_pool } from "../database/pg_dbOG.js";
-// import setupDatabaseConnection from "../database/pg_db2.js";
 
 function isLoginRequest(body: any): body is LoginPostRequest {
   return (
@@ -28,14 +27,6 @@ const login = async (request: ExtendedRequest, response: ServerResponse) => {
   const { username, password } = request.body;
 
   try {
-    //Added here
-    // const connection = await setupDatabaseConnection();
-    // if (!connection?.users_pool) {
-    //   console.error("Database connection failed, users_pool is not available.");
-    //   return null;
-    // }
-    // const { users_pool } = connection;
-
     const result = await users_pool.query(
       "SELECT * FROM users WHERE username = $1",
       [username]
@@ -88,12 +79,6 @@ const logout = async (request: IncomingMessage, response: ServerResponse) => {
   }
   // blacklistedTokens.add(token);
   try {
-    // const connection = await setupDatabaseConnection();
-    // if (!connection?.users_pool) {
-    //   console.error("Database connection failed, users_pool is not available.");
-    //   return null;
-    // }
-    // const { users_pool } = connection;
     await users_pool.query(
       "UPDATE user_tokens SET blacklisted = TRUE WHERE token = $1",
       [token]

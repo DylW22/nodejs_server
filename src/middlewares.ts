@@ -13,10 +13,8 @@ import {
   MAX_REQUESTS,
 } from "./globals.js";
 
-// import fs from "fs";
 import { DecodedToken, ExtendedRequest } from "./types.js";
 import { users_pool } from "./database/pg_dbOG.js";
-// import setupDatabaseConnection from "./database/pg_db2.js";
 //import { isUploadFile } from "./server.js";
 
 interface RequestCount {
