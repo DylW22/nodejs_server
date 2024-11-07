@@ -53,16 +53,28 @@ process.env.testVar = JSON.stringify(
 
 process.env.GOOGLE_APPLICATION_CREDENTIALS = tmpFilePath;
 
-const connector = new Connector();
-
-const clientOpts = await connector.getOptions({
-  instanceConnectionName: process.env.INSTANCE_CONNECTION_NAME,
-  ipType: IpAddressTypes.PUBLIC,
-  authType: AuthTypes.IAM,
-});
+let connectorInstance: Connector | undefined;
 let pool: pkg.Pool;
-let users_pool: any;
+let users_pool: pkg.Pool;
+const getConnector = () => {
+  if (!connectorInstance) {
+    connectorInstance = new Connector();
+  }
+  return connectorInstance;
+};
+//const connector = new Connector();
+
 const createPools = async () => {
+  const connector = getConnector();
+  if (!connector) {
+    throw new Error("Cloud SQL connector is not defined.");
+  }
+  const clientOpts = await connector.getOptions({
+    instanceConnectionName: process.env.INSTANCE_CONNECTION_NAME as string,
+    ipType: IpAddressTypes.PUBLIC,
+    authType: AuthTypes.IAM,
+  });
+
   if (!pool) {
     pool = pool = new Pool({
       ...clientOpts,

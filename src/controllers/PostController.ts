@@ -101,6 +101,7 @@ const deletePost = async (id: string, response: ServerResponse) => {
       "DELETE FROM blog_posts WHERE id = $1 RETURNING * ",
       [id]
     );
+    console.log("result: ", result);
     if (result.rowCount === 0) {
       sendResponse(response, 404, { message: "Post not found" });
       return;
