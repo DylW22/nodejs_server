@@ -15,7 +15,8 @@ import {
 
 // import fs from "fs";
 import { DecodedToken, ExtendedRequest } from "./types.js";
-import { users_pool } from "./database/pg_db.js";
+import { users_pool } from "./database/pg_dbOG.js";
+// import setupDatabaseConnection from "./database/pg_db2.js";
 //import { isUploadFile } from "./server.js";
 
 interface RequestCount {
@@ -126,6 +127,15 @@ const jwtAuthMiddleware = async (
       return;
     }
     try {
+      // const connection = await setupDatabaseConnection();
+      // if (!connection?.users_pool) {
+      //   console.error(
+      //     "Database connection failed, users_pool is not available."
+      //   );
+      //   return null;
+      // }
+      // const { users_pool } = connection;
+
       const result = await users_pool.query(
         "SELECT * FROM user_tokens WHERE token = $1 AND blacklisted = TRUE",
         [token]

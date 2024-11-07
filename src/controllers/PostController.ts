@@ -2,10 +2,18 @@ import { ServerResponse } from "http";
 import { sendResponse } from "../utilities/utils.js";
 // import { blogPosts } from "../globals.js";
 import { CreatePostRequest } from "../types.js";
-import { pool } from "../database/pg_db.js";
+import { pool } from "../database/pg_dbOG.js";
+//import setupDatabaseConnection from "../database/pg_db2.js";
 
 const getPosts = async (response: ServerResponse) => {
   try {
+    // const connection = await setupDatabaseConnection();
+    // if (!connection?.pool) {
+    //   console.error("Database connection failed, pool is not available.");
+    //   return null;
+    // }
+    // const { pool } = connection;
+
     const results = await pool.query("SELECT * FROM blog_posts");
     const blogs = results.rows;
     sendResponse(response, 200, blogs);
@@ -28,7 +36,11 @@ const getPostById = async (
     //     "INSERT INTO blog_posts (id, title, content) VALUES (1, 'TEST_POST', 'This is a test post.');"
     //   );
     // }
-
+    // const connection = await setupDatabaseConnection();
+    // if (!connection?.pool) {
+    //   throw new Error("Database connection failed, pool is not available.");
+    // }
+    // const { pool } = connection;
     const results = await pool.query(`SELECT * FROM blog_posts WHERE id = $1`, [
       id,
     ]);
@@ -56,6 +68,11 @@ const createPost = async (
   }
 
   try {
+    // const connection = await setupDatabaseConnection();
+    // if (!connection?.pool) {
+    //   throw new Error("Database connection failed, pool is not available.");
+    // }
+    // const { pool } = connection;
     const result = await pool.query(
       "INSERT INTO blog_posts (title, content) VALUES ($1, $2) RETURNING *",
       [title, content]
@@ -75,7 +92,11 @@ const updatePost = async (
 ) => {
   try {
     const { title, content } = request.body;
-
+    // const connection = await setupDatabaseConnection();
+    // if (!connection?.pool) {
+    //   throw new Error("Database connection failed, pool is not available.");
+    // }
+    // const { pool } = connection;
     const result = await pool.query(
       `UPDATE blog_posts SET title = $1, content = $2 WHERE id = $3 RETURNING *`,
       [title, content, id]
@@ -130,6 +151,11 @@ const updatePost = async (
 
 const deletePost = async (id: string, response: ServerResponse) => {
   try {
+    // const connection = await setupDatabaseConnection();
+    // if (!connection?.pool) {
+    //   throw new Error("Database connection failed, pool is not available.");
+    // }
+    // const { pool } = connection;
     const result = await pool.query(
       "DELETE FROM blog_posts WHERE id = $1 RETURNING * ",
       [id]

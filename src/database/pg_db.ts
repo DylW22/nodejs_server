@@ -1,10 +1,16 @@
 import pkg from "pg";
-import path from "path";
-import fs from "fs";
+// import path from "path";
+// import fs from "fs";
+
+import {
+  authenticateWithSecret,
+  // cloudAuthenticate,
+} from "./cloudAuthenticate.js";
 import dotenv from "dotenv";
 dotenv.config();
 const { Pool } = pkg;
 import { Connector } from "@google-cloud/cloud-sql-connector";
+// import accessSecret from "./retrieveSecret.js";
 if (!process.env.PG_USER) {
   throw new Error("Please define admin username (PG_USER) env variable.");
 }
@@ -22,20 +28,52 @@ if (!process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON) {
     "Please define ADC (GOOGLE_APPLICATION_CREDENTIALS_JSON) env variable."
   );
 }
-
+//Works locally
 // Path to store the temporary credentials JSON
-const tmpCredentialsPath = path.join("src/tmp", "gcp-credentials.json");
+//const tmpCredentialsPath = path.join("src/tmp", "gcp-credentials.json");
 
-const decodeResult = Buffer.from(
-  process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON,
-  "base64"
-).toString("utf-8");
+// const decodeResult = Buffer.from(
+//   process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON,
+//   "base64"
+// ).toString("utf-8");
 
-// Decode and write the JSON to the temporary path
-fs.writeFileSync(tmpCredentialsPath, decodeResult);
-process.env.GOOGLE_APPLICATION_CREDENTIALS = tmpCredentialsPath;
-//New
-const connector = new Connector();
+//fs.writeFileSync(tmpCredentialsPath, decodeResult);
+//process.env.GOOGLE_APPLICATION_CREDENTIALS = tmpCredentialsPath;
+
+//This method works but is unsafe as the json needs to be committed to git.
+//process.env.GOOGLE_APPLICATION_CREDENTIALS = "src/tmp/gcp-credentials.json"; //test remove
+//console.log("process.env.GOOGLE_APPLICATION_CREDENTIALS");
+
+// const secretName = await accessSecret("my-credentials");
+// //process.env.GOOGLE_APPLICATION_CREDENTIALS = secretName;
+// console.log("ENV var: ", process.env.GOOGLE_APPLICATION_CREDENTIALS);
+// console.log("secretName: ", secretName);
+
+let client: any;
+// async function run() {
+//   try {
+//     const result = await cloudAuthenticate();
+//     if (result) {
+//       client = result.client;
+//     } else {
+//       console.log("Authentication failed.");
+//     }
+//   } catch (error) {
+//     console.error("Error during authentication:", error);
+//   }
+// }
+
+async function run2() {
+  try {
+    client = await authenticateWithSecret();
+  } catch (error) {
+    console.error("Error during authentication:", error);
+  }
+}
+
+await run2();
+//await run(); // Ensure client is set before proceeding
+const connector = new Connector({ auth: client });
 
 const clientOpts = await connector.getOptions({
   instanceConnectionName: process.env.INSTANCE_CONNECTION_NAME,

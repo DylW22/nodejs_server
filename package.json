@@ -21,8 +21,10 @@
   },
   "dependencies": {
     "@google-cloud/cloud-sql-connector": "^1.4.0",
+    "@google-cloud/secret-manager": "^5.6.0",
     "bcrypt": "^5.1.1",
     "dotenv": "^16.4.5",
+    "googleapis": "^144.0.0",
     "jsonwebtoken": "^9.0.2",
     "pg": "^8.13.1"
   }
