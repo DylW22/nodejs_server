@@ -36,7 +36,7 @@ const errorMiddleware = (
 
     if (error instanceof Error) {
       statusCode = (error as any).statusCode || 500;
-      errorMessage = { message: error.message };
+      errorMessage = { message: `middleware: ${error.message}` };
     }
     sendResponse(response, statusCode, errorMessage);
   }
