@@ -14,7 +14,7 @@ import {
 } from "./globals.js";
 
 import { DecodedToken, ExtendedRequest } from "./types.js";
-import { users_pool } from "./database/pg_dbOG.js";
+import { users_pool } from "./database/pg_db.js";
 //import { isUploadFile } from "./server.js";
 
 interface RequestCount {
@@ -32,11 +32,11 @@ const errorMiddleware = (
     next();
   } catch (error) {
     let statusCode = 500;
-    let errorMessage = { message: `Internal Server Error` }; //5.11
+    let errorMessage = { message: `Internal Server Error` };
 
     if (error instanceof Error) {
       statusCode = (error as any).statusCode || 500;
-      errorMessage = { message: `middleware: ${error.message}` };
+      errorMessage = { message: error.message };
     }
     sendResponse(response, statusCode, errorMessage);
   }
@@ -54,7 +54,6 @@ const rateLimitMiddleware = (
     requestCounts[ip] = { count: 1, startTime: now };
   } else {
     const requestCount = requestCounts[ip] as RequestCount;
-    // if (!requestCounts[ip]?.startTime) return; //test
     const elapsedTime = now - requestCount.startTime;
     if (elapsedTime < RATE_LIMIT_WINDOW) {
       if (requestCount.count >= MAX_REQUESTS) {
@@ -125,15 +124,6 @@ const jwtAuthMiddleware = async (
       return;
     }
     try {
-      // const connection = await setupDatabaseConnection();
-      // if (!connection?.users_pool) {
-      //   console.error(
-      //     "Database connection failed, users_pool is not available."
-      //   );
-      //   return null;
-      // }
-      // const { users_pool } = connection;
-
       const result = await users_pool.query(
         "SELECT * FROM user_tokens WHERE token = $1 AND blacklisted = TRUE",
         [token]
@@ -173,7 +163,6 @@ const jsonParsingMiddleware = (
     const contentType = request.headers["content-type"] as string;
 
     if (contentType.includes("application/json")) {
-      //handle json
       let body = "";
       request.on("data", (chunk: Buffer) => {
         body += chunk.toString();

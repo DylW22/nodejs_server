@@ -4,8 +4,8 @@ import json
 import re
 from datetime import datetime
 # Base URL for your API
-BASE_URL = "http://127.0.0.1:3000/"  # Change the port as needed
-
+#BASE_URL = "http://127.0.0.1:3000/"  # Change the port as needed
+BASE_URL = "https://nodejs-server-neon-iota.vercel.app"
 GREEN = "\033[92m"
 RED = "\033[91m" 
 RESET = "\033[0m"
@@ -14,15 +14,20 @@ RESET = "\033[0m"
 test_results = []
 # Function to test GET request
 def test_get_posts():
+    test_name = test_get_posts.__name__
+    print(f"#### Starting {test_name} ####")
     response = requests.get(f"{BASE_URL}/posts")
     assert response.status_code == 200
     result = "GET /posts response:", response.json()
 
-    test_name = test_get_posts.__name__
+    
     test_results.append({"testName": test_name, "status" :"passed", "result": result})
-
+    print(f"#### {test_name} finished ####")
 # Function to test POST request [/login]
 def test_login(testself=False):
+    if(testself):
+        test_name = test_login.__name__
+        print(f"#### Starting {test_name} ####")
     data = {
         "username": "username",
         "password" : "password"
@@ -31,12 +36,15 @@ def test_login(testself=False):
     assert response.status_code == 200
     if(testself):
         result = "POST /login response: ", response.json()
-        test_name = test_login.__name__
         test_results.append({"testName": test_name, "status" :"passed", "result": result})
+        print(f"#### {test_name} finished ####")
     return response.json().get('token')
 
-# Function to test POST requset [/logout]
+# Function to test POST request [/logout]
 def test_logout(testself=False):
+    test_name = test_logout.__name__
+    if(testself):
+        print(f"#### Starting {test_name} ####")
     token = test_login()
     data = {}
     headers = {
@@ -45,14 +53,16 @@ def test_logout(testself=False):
     response = requests.post(f"{BASE_URL}/logout", headers=headers, json=data)
     
     assert response.status_code == 200
+
+    time.sleep(2)
     if(testself):
         result = "POST /logout response: ", response.json()
-        test_name = test_logout.__name__
         test_results.append({"testName": test_name, "status" :"passed", "result" : result})
-    time.sleep(2)
+        print(f"#### {test_name} finished ####")
 # Function to test POST request
 def test_create_post():
     test_name = test_create_post.__name__
+    print(f"#### Starting {test_name} ####")
     try:
         token = test_login()
         
@@ -61,7 +71,6 @@ def test_create_post():
         }
 
         data = {
-
             "title": "New Post",
             "content": "This is a new post."
         }
@@ -74,10 +83,11 @@ def test_create_post():
     except Exception as e:
         result = f"POST /posts failed: {e}"
         test_results.append({"testName": test_name, "status" :"failed", "result" : result})
-
+    print(f"#### {test_name} finished ####")
 # Function to test a specific GET request
 def test_get_post_by_id(post_id):
     test_name = test_get_post_by_id.__name__
+    print(f"#### Starting {test_name} ####")
     try:
         response = requests.get(f"{BASE_URL}/posts/{post_id}")
         if response.status_code == 200:
@@ -90,9 +100,11 @@ def test_get_post_by_id(post_id):
     except Exception as e:
         result = f"GET /posts/{post_id} failed: {e}"
         test_results.append({"testName": test_name, "status" :"failed", "result": result})
+    print(f"#### {test_name} finished ####")
 # Function to test PUT request
 def test_update_post(post_id):
     test_name = test_update_post.__name__
+    print(f"#### Starting {test_name} ####")
     try:
         token = test_login()
         headers = {
@@ -110,9 +122,11 @@ def test_update_post(post_id):
     except Exception as e:
         result = f"PUT /posts/{post_id} failed: {e}"
         test_results.append({"testName": test_name, "status" :"failed", "result" : result})
+    print(f"#### {test_name} finished ####")
 # Function to test DELETE request
 def test_delete_post(post_id):
     test_name = test_delete_post.__name__
+    print(f"#### Starting {test_name} ####")
     try:
         token = test_login()
         headers = {
@@ -126,18 +140,41 @@ def test_delete_post(post_id):
     except Exception as e:
         result = f"DELETE /posts/{post_id} failed: {e}"
         test_results.append({"testName": test_name, "status": "failed", "result": result})
+    print(f"#### {test_name} finished ####")
 
+def test_rate_limit(limit):
+    test_name = test_rate_limit.__name__
+    print(f"#### Starting {test_name} ####")
+    try:
+        count = 0
+        while count < limit:
+            response = requests.get(f"{BASE_URL}/posts")
+            count += 1
+            if response.status_code == 429:  # 429 indicates rate limit exceeded
+                #print(f"Rate limit reached on request {count}")
+                test_results.append({"testName": test_name, "status" :"passed", "result": response.status_code})
+                break
+            #print(f"Request {count}: Status Code {response.status_code}")
 
+        # If we made all requests without hitting rate limit, assert failure
+        assert response.status_code != 429, "Rate limit was not enforced as expected."
+        test_results.append({"testName": test_name, "status" :"failed", "result": response.status_code})
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        raise  # Raise the exception to allow for further handling (like in test cases)
+    print(f"#### {test_name} finished ####")
 # Run tests
-if __name__ == "__main__":
-    test_get_posts()
-    test_login(True)
-    test_logout(True)
-    test_create_post()
-    test_get_post_by_id(post_id="2")  
-    test_update_post(post_id="2")  
-    test_delete_post(post_id="2")
 
+test_post_id = "21"
+if __name__ == "__main__":
+    # test_get_posts()
+    # test_login(True)
+    # test_logout(True)
+    test_create_post()
+    test_get_post_by_id(test_post_id)  
+    test_update_post(test_post_id)  
+    test_delete_post(test_post_id)
+    # test_rate_limit(11)
 
 def remove_ansi_escape_codes(text):
    

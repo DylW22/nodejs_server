@@ -1,7 +1,7 @@
 import { ServerResponse } from "http";
 import { sendResponse } from "../utilities/utils.js";
 import { CreatePostRequest } from "../types.js";
-import { pool } from "../database/pg_dbOG.js";
+import { pool } from "../database/pg_db.js";
 
 const getPosts = async (response: ServerResponse) => {
   try {
@@ -19,12 +19,6 @@ const getPostById = async (
   response: ServerResponse
 ): Promise<void> => {
   try {
-    // if (process.env.NODE_ENV === "development") {
-    //   await pool.query(
-    //     "INSERT INTO blog_posts (id, title, content) VALUES (1, 'TEST_POST', 'This is a test post.');"
-    //   );
-    // }
-
     const results = await pool.query(`SELECT * FROM blog_posts WHERE id = $1`, [
       id,
     ]);
@@ -101,7 +95,6 @@ const deletePost = async (id: string, response: ServerResponse) => {
       "DELETE FROM blog_posts WHERE id = $1 RETURNING * ",
       [id]
     );
-    console.log("result: ", result);
     if (result.rowCount === 0) {
       sendResponse(response, 404, { message: "Post not found" });
       return;

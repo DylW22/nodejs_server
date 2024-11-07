@@ -34,34 +34,26 @@ import {
   updatePost,
 } from "./controllers/PostController.js";
 
-// createPost,
-// updatePost,
-// deletePost,
-
 import { uploadFile } from "./controllers/UploadController.js";
 
-// CORS middleware function
 const corsMiddleware = (req: IncomingMessage, res: ServerResponse) => {
   // Allow all origins (for development; change for production)
   res.setHeader("Access-Control-Allow-Origin", "*");
 
-  // Allow specific HTTP methods
   res.setHeader(
     "Access-Control-Allow-Methods",
     "GET, POST, PUT, DELETE, OPTIONS"
   );
 
-  // Allow specific headers (if needed)
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
-  // Handle preflight requests
   if (req.method === "OPTIONS") {
-    res.writeHead(204); // No Content
+    res.writeHead(204);
     res.end();
-    return true; // Indicate that we handled the request
+    return true;
   }
 
-  return false; // Indicate that the request should continue to be handled
+  return false;
 };
 
 setInterval(refreshTokenBlacklist, RATE_LIMIT_WINDOW);
@@ -71,18 +63,16 @@ export default async function handler(
   response: ServerResponse
 ) {
   const corsHandled = corsMiddleware(request, response);
-  if (corsHandled) return; // If CORS handled, return early
+  if (corsHandled) return;
 
   const parsedUrl = url.parse(request.url || "", true);
-  //Added this
+
   let normalizedPathname = parsedUrl.pathname || "";
   if (normalizedPathname.endsWith("/")) {
     normalizedPathname = normalizedPathname.slice(0, -1);
   }
-  // console.log("parsedUrl: ", parsedUrl);
-  // console.log("normalized: ", normalizedPathname);
   const method = request.method;
-  //const id = parsedUrl.pathname ? parsedUrl.pathname.split("/")[2] : null; // Extract ID from URL
+
   const id = normalizedPathname.split("/")[2] || null;
 
   const middlewares = [
@@ -130,7 +120,7 @@ export default async function handler(
 
             break;
           default:
-            sendResponse(response, 404, { message: "Not found" });
+            sendResponse(response, 404, { message: "Path not found" });
         }
         break;
 
@@ -158,7 +148,6 @@ export default async function handler(
           //Normalize this
           if (id) {
             if (isMutatePost(request)) {
-              //sendResponse(response, 200, { message: "PUT /posts/" });
               updatePost(id, request, response);
             } else {
               sendResponse(response, 400, {
@@ -169,21 +158,18 @@ export default async function handler(
             sendResponse(response, 400, { message: "Invalid ID" });
           }
         } else {
-          sendResponse(response, 404, { message: "Not Found Test C" });
+          sendResponse(response, 404, { message: "Post not found" });
         }
         break;
       case "DELETE":
         if (normalizedPathname.startsWith("/posts/")) {
-          //Normalize this
-
           if (id) {
             deletePost(id, response);
-            //sendResponse(response, 200, { message: `DELETE /posts/${id}` });
           } else {
             sendResponse(response, 400, { message: "Invalid ID" });
           }
         } else {
-          sendResponse(response, 404, { message: "Not Found" });
+          sendResponse(response, 404, { message: "Post not found" });
         }
         break;
 

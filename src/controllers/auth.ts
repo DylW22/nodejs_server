@@ -7,7 +7,7 @@ import {
 import { ExtendedRequest, LoginPostRequest } from "../types";
 import jwt, { JwtPayload } from "jsonwebtoken";
 // import { blacklistedTokens } from "../globals.js";
-import { users_pool } from "../database/pg_dbOG.js";
+import { users_pool } from "../database/pg_db.js";
 
 function isLoginRequest(body: any): body is LoginPostRequest {
   return (
@@ -86,7 +86,7 @@ const logout = async (request: IncomingMessage, response: ServerResponse) => {
     sendResponse(response, 200, { message: "Logged out successfully" });
   } catch (error) {
     console.error("Error blacklisting token:", error);
-    sendResponse(response, 500, { message: "Internal Server Error Test 6" });
+    sendResponse(response, 500, { message: "Internal Server Error" });
   }
 };
 export { login, logout };
