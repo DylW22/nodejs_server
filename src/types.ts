@@ -30,6 +30,13 @@ export interface LoginPostRequest extends IncomingMessage {
   password: string;
 }
 
+export interface RegisterPostRequest extends IncomingMessage {
+  username: string;
+  password: string;
+  confirmPassword: string;
+  email: string;
+}
+
 export interface UploadFile extends IncomingMessage {
   file: UploadFileStructure;
 }

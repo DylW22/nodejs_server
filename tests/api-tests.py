@@ -96,6 +96,7 @@ def test_get_post_by_id(post_id):
         else:
             result = "Post not found. Status code:", response.status_code
             test_results.append({"testName": test_name, "status" :"failed", "result": result})
+            
         test_logout() # Added 11.04
     except Exception as e:
         result = f"GET /posts/{post_id} failed: {e}"
@@ -165,12 +166,18 @@ def test_rate_limit(limit):
     print(f"#### {test_name} finished ####")
 # Run tests
 
-test_post_id = "21"
+
+# Where t is in seconds
+def waitTime(t):
+    time.sleep(t)
+test_post_id = "15"
 if __name__ == "__main__":
-    # test_get_posts()
-    # test_login(True)
-    # test_logout(True)
+    test_get_posts()
+    test_login(True)
+    test_logout(True)
+    waitTime(60)
     test_create_post()
+    waitTime(60)
     test_get_post_by_id(test_post_id)  
     test_update_post(test_post_id)  
     test_delete_post(test_post_id)
