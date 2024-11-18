@@ -28,7 +28,7 @@ __dirname = path.win32.normalize(__dirname.substring(1));
 //const logFilePath = path.join(logDirectory, "request_logs.txt");
 // //}
 
-const RATE_LIMIT_WINDOW = 60000; //60 seconds;
+const RATE_LIMIT_WINDOW = 1000; //60 seconds;
 const MAX_REQUESTS = process.env.NODE_ENV === "production" ? 10 : 1000; //10 requests per min
 
 // const USERNAME = "username";

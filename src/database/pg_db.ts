@@ -1,14 +1,8 @@
 import pkg from "pg";
-import fs from "fs";
 
 import dotenv from "dotenv";
 dotenv.config();
 const { Pool } = pkg;
-import {
-  AuthTypes,
-  Connector,
-  IpAddressTypes,
-} from "@google-cloud/cloud-sql-connector";
 
 if (!process.env.PG_USER) {
   throw new Error("Please define admin username (PG_USER) env variable.");
@@ -32,88 +26,50 @@ if (!process.env.NODE_ENV) {
   throw new Error("Please define NODE_ENV variable.");
 }
 
-//vercel --prod
-//const tmpFilePath = "../../tmp/gcp-credentials.json";
-
-//vercel dev
-//const tmpFilePath = "tmp/gcp-credentials.json"
-const tmpFilePath =
-  process.env.NODE_ENV === "production"
-    ? "../../tmp/gcp-credentials.json"
-    : "tmp/gcp-credentials.json";
-
-fs.writeFileSync(
-  tmpFilePath,
-  JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON)
-);
-
-process.env.testVar = JSON.stringify(
-  JSON.parse(fs.readFileSync(tmpFilePath, "utf8"))
-);
-
-process.env.GOOGLE_APPLICATION_CREDENTIALS = tmpFilePath;
-
-let connectorInstance: Connector | undefined;
 let pool: pkg.Pool;
 let users_pool: pkg.Pool;
-const getConnector = () => {
-  if (!connectorInstance) {
-    connectorInstance = new Connector();
-  }
-  return connectorInstance;
-};
-//const connector = new Connector();
-
+//let test_pool: pkg.Pool;
 const createPools = async () => {
-  const connector = getConnector();
-  if (!connector) {
-    throw new Error("Cloud SQL connector is not defined.");
-  }
-  const clientOpts = await connector.getOptions({
-    instanceConnectionName: process.env.INSTANCE_CONNECTION_NAME as string,
-    ipType: IpAddressTypes.PUBLIC,
-    authType: AuthTypes.IAM,
-  });
-
   if (!pool) {
     pool = pool = new Pool({
-      ...clientOpts,
       user: process.env.PG_USER,
-      host: "localhost", //34.81.181.102
+      host: "34.81.154.34",
       database: "BlogPosts", // Your database name
       password: process.env.PG_PASSWORD,
       port: 5432, // Default PostgreSQL port
       max: 5,
+      idleTimeoutMillis: 30000, // Time to wait before closing idle connections
+      connectionTimeoutMillis: 2000, // Timeout for a connection to be established
     });
   }
 
   if (!users_pool) {
     users_pool = new Pool({
-      ...clientOpts,
       user: process.env.PG_USER,
-      host: "localhost", //34.81.181.102
+      host: "34.81.154.34",
       database: "Users", // Your database name
       password: process.env.PG_PASSWORD,
       port: 5432,
+      max: 5,
+      idleTimeoutMillis: 30000, // Time to wait before closing idle connections
+      connectionTimeoutMillis: 2000, // Timeout for a connection to be established
     });
   }
+
+  // if (!test_pool) {
+  //   test_pool = new Pool({
+  //     user: "", //postgres
+  //     host: "",
+  //     database: "", // Your database name
+  //     password: "", //use password for the DB
+  //     port: 5432,
+  //     max: 5,
+  //     idleTimeoutMillis: 30000, // Time to wait before closing idle connections
+  //     connectionTimeoutMillis: 2000, // Timeout for a connection to be established
+  //   });
+  // }
 };
 
 await createPools();
 
-// const testQuery = async () => {
-//   try {
-//     const { rows: poolRows } = await pool.query("SELECT * FROM blog_posts");
-//     console.table(poolRows); // prints returned time value from server
-
-//     const { rows: userRows } = await users_pool.query("SELECT * FROM users");
-//     console.table(userRows); // prints returned time value from server
-//   } catch (error) {
-//     console.error("Error querying database:", error);
-//   } finally {
-//     await pool.end();
-//     connector.close();
-//   }
-// };
-// await testQuery();
-export { pool, users_pool };
+export { pool, users_pool, createPools };

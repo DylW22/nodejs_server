@@ -66,6 +66,6 @@
     "strictPropertyInitialization": true,
   },
   "include": ["src/**/*", "src/**/*.keep"],
-  "exclude": ["node_modules"],
+  "exclude": ["node_modules", "src/server-backup.ts"],
   
 }

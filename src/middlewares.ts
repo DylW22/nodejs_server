@@ -13,7 +13,7 @@ import {
   MAX_REQUESTS,
 } from "./globals.js";
 
-import { DecodedToken, ExtendedRequest } from "./types.js";
+import { DecodedToken } from "./types.js";
 import { users_pool } from "./database/pg_db.js";
 //import { isUploadFile } from "./server.js";
 
@@ -153,7 +153,7 @@ const jwtAuthMiddleware = async (
   }
   next();
 };
-
+/*
 const jsonParsingMiddleware = (
   request: ExtendedRequest,
   response: ServerResponse,
@@ -240,6 +240,25 @@ const jsonParsingMiddleware = (
   } else {
     next();
   }
+};*/
+
+const corsMiddleware = (req: IncomingMessage, res: ServerResponse) => {
+  // Allow all origins (for development; change for production)
+  res.setHeader("Access-Control-Allow-Origin", "*");
+
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, DELETE, OPTIONS"
+  );
+
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  if (req.method === "OPTIONS") {
+    res.writeHead(204);
+    res.end();
+    return true;
+  }
+
+  return false;
 };
 
 export {
@@ -247,5 +266,6 @@ export {
   rateLimitMiddleware,
   loggingMiddleware,
   jwtAuthMiddleware,
-  jsonParsingMiddleware,
+  // jsonParsingMiddleware,
+  corsMiddleware,
 };

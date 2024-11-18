@@ -2,14 +2,14 @@
   "name": "node-server",
   "version": "1.0.0",
   "description": "My Rest API",
-  "main": "src/server.js",
+  "main": "src/routes/server.js",
   "type": "module",
   "scripts": {
-    "dev": "node --env-file=src/.env src/server.js",
+    "dev": "node --env-file=src/.env dist/routes/server.js",
     "api-test": "python tests/api-tests.py",
     "test": "npm run test",
-    "start": "tsc && node --env-file=src/.env dist/server.js",
-    "serve": "tsc && node dist/server.js"
+    "start": "tsc && node --env-file=src/.env dist/routes/server.js",
+    "serve": "tsc && node dist/routes/server.js"
   },
   "author": "",
   "license": "ISC",

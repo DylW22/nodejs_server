@@ -1,6 +1,4 @@
 import { IncomingMessage, ServerResponse } from "http";
-// const jwt = require("jsonwebtoken"); // Ensure you have the jwt package
-// const { requestCounts, RATE_LIMIT_WINDOW } = require("../globals");
 
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { requestCounts, RATE_LIMIT_WINDOW } from "../globals.js";
@@ -10,17 +8,9 @@ import {
   DecodedToken,
   UploadFile,
 } from "../types.js";
+
 const { JWT_SECRET, JWT_EXPIRATION } = process.env;
 
-// interface User {
-//   username: string;
-// }
-
-// const generateToken = (user: User): string => {
-//   return jwt.sign({ username: user.username }, JWT_SECRET as jwt.Secret, {
-//     expiresIn: JWT_EXPIRATION,
-//   });
-// };
 const generateToken = (userId: string): string => {
   const token = jwt.sign({ userId: userId }, JWT_SECRET as jwt.Secret, {
     expiresIn: JWT_EXPIRATION,
@@ -87,12 +77,17 @@ const runMiddleware = (
         throw new Error(`Middleware at index ${index} is not a function`);
       }
       index++;
+
       middleware(request, response, next);
     } else {
       finalHandler();
     }
   };
+  //const middlewareStartTime = performance.now();
   next();
+  // console.log(
+  //   `Middleware execution time: ${performance.now() - middlewareStartTime}`
+  // );
 };
 
 const refreshTokenBlacklist = () => {
@@ -109,7 +104,6 @@ const isUploadFile = (request: IncomingMessage): request is UploadFile => {
   return (request as UploadFile).file !== undefined;
 };
 
-//Old
 const isMutatePost = (
   request: IncomingMessage
 ): request is CreatePostRequest => {

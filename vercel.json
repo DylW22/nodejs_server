@@ -1,10 +1,47 @@
 {
   "version": 2,
-  "builds": [{ "src": "src/*.ts", "use": "@vercel/node" }],
+  "builds": [{ "src": "src/**/*.ts", "use": "@vercel/node" }],
   "routes": [
     {
-      "src": "/(.*)",
-      "dest": "src/server.ts"
+      "src": "/",
+      "dest": "src/routes/index.ts"
+    },
+    {
+      "src": "/posts",
+      "methods": ["GET"],
+      "dest": "src/routes/getPosts.ts"
+    },
+    {
+      "src": "/posts",
+      "methods": ["POST"],
+      "dest": "src/routes/createPost.ts"
+    },
+    {
+      "src": "/posts/(.*)",
+      "methods": ["GET"],
+      "dest": "src/routes/getPostById.ts"
+    },
+    {
+      "src": "/posts/(.*)",
+      "methods": ["PUT"],
+      "dest": "src/routes/updatePost.ts"
+    },
+    {
+      "src": "/posts/(.*)",
+      "methods": ["DELETE"],
+      "dest": "src/routes/deletePost.ts"
+    },
+    {
+      "src": "/login",
+      "dest": "src/routes/login.ts"
+    },
+    {
+      "src": "/logout",
+      "dest": "src/routes/logout.ts"
+    },
+    {
+      "src": "/register",
+      "dest": "src/routes/register.ts"
     }
   ]
 }

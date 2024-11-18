@@ -40,7 +40,7 @@ const register = async (request: ExtendedRequest, response: ServerResponse) => {
   }
 
   const { username, password, confirmPassword, email } = request.body;
-
+  console.log("request.body: ", request.body);
   //Perform input validation here.
   //Perform sanitisation here.
 
@@ -65,13 +65,11 @@ const register = async (request: ExtendedRequest, response: ServerResponse) => {
     sendResponse(response, 400, { message: "Password is invalid." });
     return;
   }
-  //Check if username already exists
-  if (await usernameExists(username)) {
+  const user = await userExists(username, email);
+  if (user && user?.username === username) {
     sendResponse(response, 400, { message: "Username already exists." });
     return;
-  }
-  //Check if email already exists
-  if (await emailExists(email)) {
+  } else if (user && user?.email === email) {
     sendResponse(response, 400, { message: "Email address already exists." });
     return;
   }
@@ -86,8 +84,6 @@ const register = async (request: ExtendedRequest, response: ServerResponse) => {
       message: `An error occurred while registering the user: ${error}`,
     });
   }
-  // sendResponse(response, 404, { message: "TEST" });
-  // return;
 };
 
 const passwordsMatch = (password: string, confirmPassword: string) => {
@@ -117,24 +113,13 @@ const isValidPassword = (password: string): password is PasswordPattern => {
 };
 
 //const isCommonPassword = () => {};
-const usernameExists = async (username: string) => {
-  //SQL method for seeing if username exists
-  const query = "SELECT 1 from users WHERE username = $1 LIMIT 1";
 
+const userExists = async (username: string, email: string) => {
+  const query =
+    "SELECT username, email from users WHERE username = $1 OR email = $2 LIMIT 1";
   try {
-    const result = await users_pool.query(query, [username]);
-    return result?.rowCount && result.rowCount > 0;
-  } catch (error) {
-    return false;
-  }
-};
-const emailExists = async (email: string) => {
-  //SQL method for seeing if email exists
-  const query = "SELECT 1 from users WHERE email = $1 LIMIT 1";
-
-  try {
-    const result = await users_pool.query(query, [email]);
-    return result?.rowCount && result.rowCount > 0;
+    const result = await users_pool.query(query, [username, email]);
+    return result.rows[0];
   } catch (error) {
     return false;
   }
@@ -152,9 +137,6 @@ const addNewUser = async (
   } catch (error) {
     throw new Error("Failed to add new user to the database.");
   }
-  // console.log("username: ", username);
-  // console.log("password: ", password);
-  // console.log("email: ", email);
 };
 const login = async (request: ExtendedRequest, response: ServerResponse) => {
   if (!isLoginRequest(request.body)) {
@@ -185,9 +167,11 @@ const login = async (request: ExtendedRequest, response: ServerResponse) => {
       if (!decoded?.exp) {
         throw new Error("Token does not contain an expiration");
       }
+
       sendResponse(response, 200, { message: "Login successful", token });
-      //Added
+
       const expiresAt = new Date(decoded.exp * 1000);
+
       await users_pool.query(
         "INSERT INTO user_tokens (user_id, token, expires_at) VALUES ($1, $2, $3)",
         [user.id, token, expiresAt]

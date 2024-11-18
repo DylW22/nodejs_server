@@ -7,6 +7,7 @@ const getPosts = async (response: ServerResponse) => {
   try {
     const results = await pool.query("SELECT * FROM blog_posts");
     const blogs = results.rows;
+
     sendResponse(response, 200, blogs);
   } catch (error) {
     console.error("Error retrieving blog posts:", error);
@@ -46,11 +47,6 @@ const createPost = async (
   }
 
   try {
-    // const connection = await setupDatabaseConnection();
-    // if (!connection?.pool) {
-    //   throw new Error("Database connection failed, pool is not available.");
-    // }
-    // const { pool } = connection;
     const result = await pool.query(
       "INSERT INTO blog_posts (title, content) VALUES ($1, $2) RETURNING *",
       [title, content]
@@ -105,17 +101,5 @@ const deletePost = async (id: string, response: ServerResponse) => {
     sendResponse(response, 500, { message: "Internal Server Error" });
   }
 };
-
-// const deletePost = (id: string, response: ServerResponse) => {
-//   const postIndex = blogPosts.findIndex((post) => post.id === id);
-//   if (postIndex === -1) {
-//     sendResponse(response, 404, { message: "Post not found" });
-//     return;
-//   }
-//   blogPosts.splice(postIndex, 1);
-//   sendResponse(response, 204, { message: "" });
-// };
-
-// module.exports = { getPosts, getPostById, createPost, updatePost, deletePost };
 
 export { getPosts, getPostById, createPost, updatePost, deletePost };
