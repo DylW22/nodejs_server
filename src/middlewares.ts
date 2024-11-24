@@ -5,15 +5,21 @@ import {
   verifyToken,
 } from "./utilities/utils.js";
 
+// import {
+//   requestCounts,
+//   // logFilePath, //temp disabled
+//   // blacklistedTokens,
+//   RATE_LIMIT_WINDOW,
+//   MAX_REQUESTS,
+// } from "./globals.js";
+
 import {
   requestCounts,
-  // logFilePath, //temp disabled
-  // blacklistedTokens,
-  RATE_LIMIT_WINDOW,
   MAX_REQUESTS,
-} from "./globals.js";
+  RATE_LIMIT_WINDOW,
+} from "./utilities/utils.js";
 
-import { DecodedToken } from "./types.js";
+import { DecodedToken } from "../types/types";
 import { users_pool } from "./database/pg_db.js";
 //import { isUploadFile } from "./server.js";
 
@@ -135,7 +141,7 @@ const jwtAuthMiddleware = async (
     } catch (error) {
       console.error("Error checking blacklisted tokens:", error);
       sendResponse(response, 500, {
-        message: `Internal Server Error`,
+        message: `Internal Server Error: Error 1`,
       });
       return;
     }

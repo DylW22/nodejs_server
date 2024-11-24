@@ -1,6 +1,6 @@
 import { ServerResponse } from "http";
 import { sendResponse } from "../utilities/utils.js";
-import { CreatePostRequest } from "../types.js";
+import { CreatePostRequest } from "../../types/types";
 import { pool } from "../database/pg_db.js";
 
 const getPosts = async (response: ServerResponse) => {
@@ -11,7 +11,9 @@ const getPosts = async (response: ServerResponse) => {
     sendResponse(response, 200, blogs);
   } catch (error) {
     console.error("Error retrieving blog posts:", error);
-    sendResponse(response, 500, { message: "Internal Server Error" });
+    sendResponse(response, 500, {
+      message: `Internal Server Error: Error 4, ${error}`,
+    });
   }
 };
 
@@ -32,7 +34,9 @@ const getPostById = async (
     sendResponse(response, 200, retrievedPost);
   } catch (error) {
     console.error("Error retrieving blog posts:", error);
-    sendResponse(response, 500, { message: "Internal Server Error" });
+    sendResponse(response, 500, {
+      message: `Internal Server Error: Error 5, ${error}`,
+    });
   }
 };
 

@@ -71,3 +71,12 @@ export interface ExtendedRequest extends IncomingMessage {
   file?: UploadFileStructure;
   user?: DecodedToken;
 }
+
+export type RequestCount = {
+  count: number;
+  startTime: number;
+};
+
+export type RequestCounts = {
+  [ip: string]: RequestCount;
+};

@@ -1,0 +1,6 @@
+src/logs/
+src/uploads/
+src/*.txt
+src/config.ts
+src/globals.ts
+

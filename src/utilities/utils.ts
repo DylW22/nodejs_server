@@ -1,15 +1,19 @@
 import { IncomingMessage, ServerResponse } from "http";
 
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { requestCounts, RATE_LIMIT_WINDOW } from "../globals.js";
 import {
   BlogPost,
   CreatePostRequest,
   DecodedToken,
+  RequestCounts,
   UploadFile,
-} from "../types.js";
+} from "../../types/types";
 
 const { JWT_SECRET, JWT_EXPIRATION } = process.env;
+
+const RATE_LIMIT_WINDOW = 1000; //60 seconds;
+const MAX_REQUESTS = process.env.NODE_ENV === "production" ? 10 : 1000; //10 requests per min
+const requestCounts: RequestCounts = {};
 
 const generateToken = (userId: string): string => {
   const token = jwt.sign({ userId: userId }, JWT_SECRET as jwt.Secret, {
@@ -118,4 +122,7 @@ export {
   refreshTokenBlacklist,
   isUploadFile,
   isMutatePost,
+  MAX_REQUESTS,
+  requestCounts,
+  RATE_LIMIT_WINDOW,
 };

@@ -13,11 +13,26 @@ import { sendResponse } from "../utilities/utils.js";
 // };
 
 export default async function handler(
-  _request: IncomingMessage,
+  request: IncomingMessage,
   response: ServerResponse
 ): Promise<void> {
   //await testQuery();
-  sendResponse(response, 200, {
-    message: `Welcome to the API!`,
-  });
+  if (request.url === "/ip") {
+    try {
+      const res = await fetch("https://api.ipify.org?format=json");
+      const data = await res.json();
+      const ip = data.ip;
+      sendResponse(response, 200, {
+        message: `IP to add: ${ip}`,
+      });
+    } catch (error) {
+      sendResponse(response, 500, {
+        message: `Error fetching IP ${error}`,
+      });
+    }
+  } else {
+    sendResponse(response, 200, {
+      message: `Welcome to the API!`,
+    });
+  }
 }

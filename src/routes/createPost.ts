@@ -1,30 +1,33 @@
-import { IncomingMessage, ServerResponse } from "http";
-import { getPosts } from "../controllers/PostController.js";
+import { ServerResponse } from "http";
+
 import { runMiddleware, sendResponse } from "../utilities/utils.js";
 import {
+  corsMiddleware,
   errorMiddleware,
+  jwtAuthMiddleware,
   loggingMiddleware,
   rateLimitMiddleware,
 } from "../middlewares.js";
+import { createPost } from "../controllers/PostController.js";
+import { CreatePostRequest } from "../../types/types.js";
 
 const middlewares = [
   rateLimitMiddleware, //4.94ms, 7.125ms
   loggingMiddleware, //49ms, 39ms
   errorMiddleware, //3.25ms, 8.52ms
+  jwtAuthMiddleware,
 ];
+
 export default async function handler(
-  request: IncomingMessage,
+  request: CreatePostRequest,
   response: ServerResponse
 ): Promise<void> {
-  if (request.method === "GET") {
+  //console.time("createPost handler run time");
+  if (request.method === "POST") {
     runMiddleware(request, response, middlewares, async () => {
-      // response.setHeader(
-      //   "Cache-Control",
-      //   "public, max-age=60, s-maxage=600, stale-while-revalidate=59"
-      // );
-      await getPosts(response);
-
-      //sendResponse(response, 200, { message: "GET POSTS" });
+      const corsHandled = corsMiddleware(request, response);
+      if (corsHandled) return;
+      await createPost(request, response);
     });
   } else {
     sendResponse(response, 405, { message: "Method Not Allowed" });

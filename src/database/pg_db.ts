@@ -37,9 +37,9 @@ const createPools = async () => {
       database: "BlogPosts", // Your database name
       password: process.env.PG_PASSWORD,
       port: 5432, // Default PostgreSQL port
-      max: 5,
-      idleTimeoutMillis: 30000, // Time to wait before closing idle connections
-      connectionTimeoutMillis: 2000, // Timeout for a connection to be established
+      //max: 5,
+      //idleTimeoutMillis: 30000, // Time to wait before closing idle connections
+      //connectionTimeoutMillis: 10000, // Timeout for a connection to be established
     });
   }
 
@@ -50,9 +50,9 @@ const createPools = async () => {
       database: "Users", // Your database name
       password: process.env.PG_PASSWORD,
       port: 5432,
-      max: 5,
-      idleTimeoutMillis: 30000, // Time to wait before closing idle connections
-      connectionTimeoutMillis: 2000, // Timeout for a connection to be established
+      //max: 5,
+      //idleTimeoutMillis: 30000, // Time to wait before closing idle connections
+      //connectionTimeoutMillis: 10000, // Timeout for a connection to be established
     });
   }
 

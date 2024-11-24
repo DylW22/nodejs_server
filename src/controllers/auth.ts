@@ -8,7 +8,7 @@ import {
   ExtendedRequest,
   LoginPostRequest,
   RegisterPostRequest,
-} from "../types";
+} from "../../types/types";
 import jwt, { JwtPayload } from "jsonwebtoken";
 // import { blacklistedTokens } from "../globals.js";
 import { users_pool } from "../database/pg_db.js";
@@ -181,7 +181,7 @@ const login = async (request: ExtendedRequest, response: ServerResponse) => {
     }
   } catch (error) {
     console.error("Error during login:", error);
-    sendResponse(response, 500, { message: "Internal server error" });
+    sendResponse(response, 500, { message: "Internal server error: Error 2" });
   }
 };
 
@@ -211,7 +211,7 @@ const logout = async (request: IncomingMessage, response: ServerResponse) => {
     sendResponse(response, 200, { message: "Logged out successfully" });
   } catch (error) {
     console.error("Error blacklisting token:", error);
-    sendResponse(response, 500, { message: "Internal Server Error" });
+    sendResponse(response, 500, { message: "Internal Server Error: Error 3" });
   }
 };
 export { login, logout, register };

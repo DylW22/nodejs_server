@@ -1,16 +1,7 @@
 import path from "path";
 // import fs from "fs";
 // import { BlogPost } from "./types";
-
-type RequestCount = {
-  count: number;
-  startTime: number;
-};
-
-type RequestCounts = {
-  [ip: string]: RequestCount;
-};
-
+import { RequestCounts } from "../types/types";
 const requestCounts: RequestCounts = {};
 
 let __dirname = path.dirname(new URL(import.meta.url).pathname);
