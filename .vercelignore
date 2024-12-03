@@ -4,9 +4,6 @@ src/*.txt
 
 
 
-src/controllers/auth.ts
-src/controllers/PostController.ts
-src/database/pg_db.ts
 
 src/routes/login.ts
 src/routes/logout.ts
