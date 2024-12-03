@@ -1,6 +1,13 @@
 src/logs/
 src/uploads/
 src/*.txt
-src/config.ts
-src/globals.ts
 
+
+
+src/controllers/auth.ts
+src/controllers/PostController.ts
+src/database/pg_db.ts
+
+src/routes/login.ts
+src/routes/logout.ts
+src/routes/register.ts

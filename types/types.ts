@@ -1,5 +1,4 @@
 import { ServerResponse, IncomingMessage } from "http";
-// Define and export the BlogPost interface
 export interface BlogPost {
   id: string;
   title: string;

@@ -8,11 +8,9 @@ import {
   ExtendedRequest,
   LoginPostRequest,
   RegisterPostRequest,
-} from "../../types/types";
+} from "../../types/types.js";
 import jwt, { JwtPayload } from "jsonwebtoken";
-// import { blacklistedTokens } from "../globals.js";
-import { users_pool } from "../database/pg_db.js";
-
+import { getDbClient } from "../database/pg_db.js";
 function isLoginRequest(body: any): body is LoginPostRequest {
   return (
     body &&
@@ -40,7 +38,6 @@ const register = async (request: ExtendedRequest, response: ServerResponse) => {
   }
 
   const { username, password, confirmPassword, email } = request.body;
-  console.log("request.body: ", request.body);
   //Perform input validation here.
   //Perform sanitisation here.
 
@@ -117,12 +114,16 @@ const isValidPassword = (password: string): password is PasswordPattern => {
 const userExists = async (username: string, email: string) => {
   const query =
     "SELECT username, email from users WHERE username = $1 OR email = $2 LIMIT 1";
+  const client = getDbClient();
   try {
-    const result = await users_pool.query(query, [username, email]);
+    //await client.connect();
+    const result = await client.query(query, [username, email]);
     return result.rows[0];
   } catch (error) {
     return false;
-  }
+  } /*finally {
+    await client.end();
+  }*/
 };
 
 const addNewUser = async (
@@ -132,11 +133,14 @@ const addNewUser = async (
 ) => {
   const query =
     "INSERT INTO users (username, password, email) VALUES ($1, $2, $3)";
+  const client = getDbClient();
   try {
-    await users_pool.query(query, [username, password, email]);
+    await client.query(query, [username, password, email]);
   } catch (error) {
     throw new Error("Failed to add new user to the database.");
-  }
+  } /*finally {
+    await client.end();
+  }*/
 };
 const login = async (request: ExtendedRequest, response: ServerResponse) => {
   if (!isLoginRequest(request.body)) {
@@ -146,9 +150,9 @@ const login = async (request: ExtendedRequest, response: ServerResponse) => {
     return;
   }
   const { username, password } = request.body;
-
+  const client = getDbClient();
   try {
-    const result = await users_pool.query(
+    const result = await client.query(
       "SELECT * FROM users WHERE username = $1",
       [username]
     );
@@ -168,21 +172,22 @@ const login = async (request: ExtendedRequest, response: ServerResponse) => {
         throw new Error("Token does not contain an expiration");
       }
 
-      sendResponse(response, 200, { message: "Login successful", token });
-
       const expiresAt = new Date(decoded.exp * 1000);
 
-      await users_pool.query(
+      await client.query(
         "INSERT INTO user_tokens (user_id, token, expires_at) VALUES ($1, $2, $3)",
         [user.id, token, expiresAt]
       );
+      sendResponse(response, 200, { message: "Login successful", token });
     } else {
       sendResponse(response, 401, { message: "Invalid credentials" });
     }
   } catch (error) {
     console.error("Error during login:", error);
     sendResponse(response, 500, { message: "Internal server error: Error 2" });
-  }
+  } /*finally {
+    await client.end();
+  }*/
 };
 
 const logout = async (request: IncomingMessage, response: ServerResponse) => {
@@ -203,8 +208,9 @@ const logout = async (request: IncomingMessage, response: ServerResponse) => {
     return;
   }
   // blacklistedTokens.add(token);
+  const client = getDbClient();
   try {
-    await users_pool.query(
+    await client.query(
       "UPDATE user_tokens SET blacklisted = TRUE WHERE token = $1",
       [token]
     );
@@ -212,6 +218,8 @@ const logout = async (request: IncomingMessage, response: ServerResponse) => {
   } catch (error) {
     console.error("Error blacklisting token:", error);
     sendResponse(response, 500, { message: "Internal Server Error: Error 3" });
-  }
+  } /*finally {
+    await client.end();
+  }*/
 };
 export { login, logout, register };

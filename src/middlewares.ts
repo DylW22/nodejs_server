@@ -5,14 +5,6 @@ import {
   verifyToken,
 } from "./utilities/utils.js";
 
-// import {
-//   requestCounts,
-//   // logFilePath, //temp disabled
-//   // blacklistedTokens,
-//   RATE_LIMIT_WINDOW,
-//   MAX_REQUESTS,
-// } from "./globals.js";
-
 import {
   requestCounts,
   MAX_REQUESTS,
@@ -20,15 +12,13 @@ import {
 } from "./utilities/utils.js";
 
 import { DecodedToken } from "../types/types";
-import { users_pool } from "./database/pg_db.js";
-//import { isUploadFile } from "./server.js";
+import { getDbClient } from "./database/pg_db.js";
 
 interface RequestCount {
   count: number;
   startTime: number;
 }
 
-//https://chatgpt.com/c/6724597f-0440-8012-a584-3d17b6d18b25
 const errorMiddleware = (
   _request: IncomingMessage,
   response: ServerResponse,
@@ -129,8 +119,9 @@ const jwtAuthMiddleware = async (
       sendResponse(response, 401, { message: "Token expired" });
       return;
     }
+    const client = getDbClient(); //added
     try {
-      const result = await users_pool.query(
+      const result = await client.query(
         "SELECT * FROM user_tokens WHERE token = $1 AND blacklisted = TRUE",
         [token]
       );
@@ -143,8 +134,9 @@ const jwtAuthMiddleware = async (
       sendResponse(response, 500, {
         message: `Internal Server Error: Error 1`,
       });
-      return;
-    }
+    } /*finally {
+      await client.end();
+    }*/
     //Fix this blacklisting
     // if (blacklistedTokens.has(token)) {
     //   sendResponse(response, 403, { message: "Token has been blacklisted" });
@@ -159,94 +151,6 @@ const jwtAuthMiddleware = async (
   }
   next();
 };
-/*
-const jsonParsingMiddleware = (
-  request: ExtendedRequest,
-  response: ServerResponse,
-  next: () => {}
-) => {
-  if (request.method === "POST" || request.method === "PUT") {
-    const contentType = request.headers["content-type"] as string;
-
-    if (contentType.includes("application/json")) {
-      let body = "";
-      request.on("data", (chunk: Buffer) => {
-        body += chunk.toString();
-      });
-      request.on("end", () => {
-        try {
-          request.body = JSON.parse(body);
-          next();
-        } catch (error) {
-          sendResponse(response, 400, {
-            message: "Invalid JSON",
-            error:
-              error instanceof Error ? error.message : "Internal Server Error",
-          });
-        }
-      });
-      request.on("error", () => {
-        sendResponse(response, 500, {
-          message: "Internal Server Error",
-        });
-      });
-    } else if (contentType?.includes("multipart/form-data")) {
-      //handle multi-form
-      const boundary = contentType.split("boundary=")[1];
-      if (!boundary) {
-        sendResponse(response, 400, { message: "No boundary specified" });
-        return;
-      }
-      let body = Buffer.alloc(0);
-
-      request.on("data", (chunk: Buffer) => {
-        body = Buffer.concat([body, chunk]);
-      });
-
-      request.on("end", () => {
-        const parts = body.toString().split(`--${boundary}`);
-        const filePart = parts.find((part) =>
-          part.includes("Content-Disposition: form-data")
-        );
-        if (filePart) {
-          const [headers, fileContent] = filePart.split("\r\n\r\n");
-
-          if (!headers?.length || !fileContent?.length) {
-            sendResponse(response, 400, {
-              message: "Invalid file upload format",
-            });
-            return;
-          }
-
-          const fileNameMatch = headers.match(/filename="(.+?)"/);
-          const fileName = fileNameMatch ? fileNameMatch[1] : "uploaded_file";
-
-          request.file = {
-            name: `${fileName}`, //fileName
-            data: Buffer.from(
-              fileContent.split("\r\n--")[0] as string,
-              "binary"
-            ),
-          };
-          next();
-        } else {
-          sendResponse(response, 400, {
-            message: "No file uploaded",
-          });
-        }
-      });
-      request.on("error", () => {
-        sendResponse(response, 500, {
-          message: "Internal Server Error during file upload",
-        });
-      });
-    } else {
-      sendResponse(response, 415, { message: "Unsupported Content-Type" });
-    }
-  } else {
-    next();
-  }
-};*/
 
 const corsMiddleware = (req: IncomingMessage, res: ServerResponse) => {
   // Allow all origins (for development; change for production)
@@ -267,11 +171,37 @@ const corsMiddleware = (req: IncomingMessage, res: ServerResponse) => {
   return false;
 };
 
+const corsMiddleware2 = (
+  request: IncomingMessage,
+  response: ServerResponse,
+  next: () => void
+): void => {
+  const allowedOrigin = "http://localhost:5173";
+  response.setHeader("Access-Control-Allow-Origin", allowedOrigin);
+  response.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, DELETE, OPTIONS"
+  );
+  response.setHeader(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Authorization"
+  );
+  response.setHeader("Access-Control-Allow-Credentials", "true");
+
+  if (request.method === "OPTIONS") {
+    response.writeHead(204);
+    response.end();
+    return;
+  }
+
+  next();
+};
+
 export {
   errorMiddleware,
   rateLimitMiddleware,
   loggingMiddleware,
   jwtAuthMiddleware,
-  // jsonParsingMiddleware,
   corsMiddleware,
+  corsMiddleware2,
 };

@@ -1,30 +1,34 @@
 import { ServerResponse } from "http";
 import { sendResponse } from "../utilities/utils.js";
-import { CreatePostRequest } from "../../types/types";
-import { pool } from "../database/pg_db.js";
-
+import { CreatePostRequest } from "../../types/types.js";
+import { getDbClient } from "../database/pg_db.js";
 const getPosts = async (response: ServerResponse) => {
+  const client = getDbClient();
   try {
-    const results = await pool.query("SELECT * FROM blog_posts");
+    const results = await client.query('SELECT * FROM "BlogPosts"');
     const blogs = results.rows;
-
+    //console.log(`${JSON.stringify(results.rows)}`);
     sendResponse(response, 200, blogs);
   } catch (error) {
     console.error("Error retrieving blog posts:", error);
     sendResponse(response, 500, {
       message: `Internal Server Error: Error 4, ${error}`,
     });
-  }
+  } /*finally {
+    await client.end();
+  }*/
 };
 
 const getPostById = async (
   id: string,
   response: ServerResponse
 ): Promise<void> => {
+  const client = getDbClient();
   try {
-    const results = await pool.query(`SELECT * FROM blog_posts WHERE id = $1`, [
-      id,
-    ]);
+    const results = await client.query(
+      `SELECT * FROM "BlogPosts" WHERE id = $1`,
+      [id]
+    );
 
     const retrievedPost = results.rows[0];
     if (!retrievedPost) {
@@ -37,7 +41,9 @@ const getPostById = async (
     sendResponse(response, 500, {
       message: `Internal Server Error: Error 5, ${error}`,
     });
-  }
+  } /*finally {
+    await client.end();
+  }*/
 };
 
 const createPost = async (
@@ -49,18 +55,20 @@ const createPost = async (
     sendResponse(response, 400, { message: "Title and content are required" });
     return;
   }
-
+  const client = getDbClient();
   try {
-    const result = await pool.query(
-      "INSERT INTO blog_posts (title, content) VALUES ($1, $2) RETURNING *",
+    const result = await client.query(
+      `INSERT INTO "BlogPosts" (title, content) VALUES ($1, $2) RETURNING *`,
       [title, content]
     );
     const newPost = result.rows[0];
     sendResponse(response, 201, newPost);
   } catch (error) {
     console.error("Error creating post:", error);
-    sendResponse(response, 500, { message: "Internal server error" });
-  }
+    sendResponse(response, 500, { message: "Internal server error, Error A" });
+  } /*finally {
+    await client.end();
+  }*/
 };
 
 const updatePost = async (
@@ -68,10 +76,11 @@ const updatePost = async (
   request: CreatePostRequest,
   response: ServerResponse
 ) => {
+  const client = getDbClient();
   try {
     const { title, content } = request.body;
-    const result = await pool.query(
-      `UPDATE blog_posts SET title = $1, content = $2 WHERE id = $3 RETURNING *`,
+    const result = await client.query(
+      `UPDATE "BlogPosts" SET title = $1, content = $2 WHERE id = $3 RETURNING *`,
       [title, content, id]
     );
     if (result.rowCount === 0) {
@@ -86,13 +95,16 @@ const updatePost = async (
       message: "Invalid request or database database error",
       error: error instanceof Error ? error.message : "Unknown error",
     });
-  }
+  } /*finally {
+    await client.end();
+  }*/
 };
 
 const deletePost = async (id: string, response: ServerResponse) => {
+  const client = getDbClient();
   try {
-    const result = await pool.query(
-      "DELETE FROM blog_posts WHERE id = $1 RETURNING * ",
+    const result = await client.query(
+      `DELETE FROM "BlogPosts" WHERE id = $1 RETURNING * `,
       [id]
     );
     if (result.rowCount === 0) {
@@ -103,7 +115,9 @@ const deletePost = async (id: string, response: ServerResponse) => {
   } catch (error) {
     console.error("Error deleting post:", error);
     sendResponse(response, 500, { message: "Internal Server Error" });
-  }
+  } /*finally {
+    await client.end();
+  }*/
 };
 
 export { getPosts, getPostById, createPost, updatePost, deletePost };

@@ -12,13 +12,17 @@
       "dest": "src/routes/index.ts"
     },
     {
+      "src": "/api-login",
+      "dest": "src/routes/index.ts"
+    },
+    {
       "src": "/posts",
       "methods": ["GET"],
       "dest": "src/routes/getPosts.ts"
     },
     {
       "src": "/posts",
-      "methods": ["POST"],
+      "methods": ["POST", "OPTIONS"],
       "dest": "src/routes/createPost.ts"
     },
     {
@@ -28,7 +32,7 @@
     },
     {
       "src": "/posts/(.*)",
-      "methods": ["PUT"],
+      "methods": ["PUT", "OPTIONS"],
       "dest": "src/routes/updatePost.ts"
     },
     {
@@ -38,15 +42,15 @@
     },
     {
       "src": "/login",
-      "dest": "src/routes/login.ts"
+      "dest": "src/routes/authRoutes.ts"
     },
     {
       "src": "/logout",
-      "dest": "src/routes/logout.ts"
+      "dest": "src/routes/authRoutes.ts"
     },
     {
       "src": "/register",
-      "dest": "src/routes/register.ts"
+      "dest": "src/routes/authRoutes.ts"
     }
   ]
 }

@@ -2,18 +2,4 @@
 # Ensure TS emits log folder -- DONE
 # Ensure existing token is used if not expired?
 
-// const testQuery = async () => {
-//   try {
-//     const { rows: poolRows } = await pool.query("SELECT * FROM blog_posts");
-//     console.table(poolRows); // prints returned time value from server
-
-//     const { rows: userRows } = await users_pool.query("SELECT * FROM users");
-//     console.table(userRows); // prints returned time value from server
-//   } catch (error) {
-//     console.error("Error querying database:", error);
-//   } finally {
-//     await pool.end();
-//     connector.close();
-//   }
-// };
-// await testQuery();
+# Add remaining middlewares for index route

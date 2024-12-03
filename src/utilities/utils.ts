@@ -87,11 +87,7 @@ const runMiddleware = (
       finalHandler();
     }
   };
-  //const middlewareStartTime = performance.now();
   next();
-  // console.log(
-  //   `Middleware execution time: ${performance.now() - middlewareStartTime}`
-  // );
 };
 
 const refreshTokenBlacklist = () => {
